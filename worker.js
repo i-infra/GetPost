@@ -197,8 +197,8 @@ hr {
     color: #999;
 }`
 const upload = `<html><head>
-<link rel="shortcut icon" href="data:image/x-icon;base64,${favicon} />
-<link rel="stylesheet" href="getpost.css">
+<link rel="shortcut icon" href="data:image/x-icon;base64,${favicon}" />
+<link rel="stylesheet" href="/getpost.css">
 <title>upload</title>
 <div id="wrap">
     <div id="form">
@@ -809,9 +809,12 @@ async function do_work_with_fetch_event(fetch_event) {
 				const store_key = `${my_ulid}_${body_sha256}`
 				await NAMESPACE.put(store_key, blob, expiry)
 				await NAMESPACE.put(delete_key, store_key, expiry)
-				return rawHtmlResponse(`view: ${url.href}?key=${store_key}
-				delete: ${url.href.replace('post', 'delete')}?key=${delete_key}
-				expires in: 1 year`)
+				return rawHtmlResponse(`GETPOST saved ${blob.size} bytes
+share link: ${url.href}?key=${store_key}
+
+save link to delete: ${url.href.replace('/post', '/delete')}?key=${delete_key}
+
+expires in: 1 year`, DEFAULT_MIME_TEXT)
 			}
 			if (request.method == "GET") {
 				const key = url.searchParams.get("key")
