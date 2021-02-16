@@ -88,8 +88,117 @@ function b32decode (input) {
 const DEFAULT_MIME_TEXT = "text/plain"
 const pacman_svg = `PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgo8c3ZnCiAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgeG1sbnM6Y2M9Imh0dHA6Ly93ZWIucmVzb3VyY2Uub3JnL2NjLyIKICAgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICBpZD0ic3ZnMjIxMSIKICAgc29kaXBvZGk6dmVyc2lvbj0iMC4zMiIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40NS4xIgogICB3aWR0aD0iNDIuMjc5OTk5IgogICBoZWlnaHQ9IjQyLjI3OTk5OSIKICAgdmVyc2lvbj0iMS4wIgogICBzb2RpcG9kaTpkb2NiYXNlPSJDOlxEb2t1bWVudGUgdW5kIEVpbnN0ZWxsdW5nZW5cQmlhbmNhIEtyb25hd2V0dGVyXERlc2t0b3BcUGgiCiAgIHNvZGlwb2RpOmRvY25hbWU9IlBhYy1NYW4uc3ZnIgogICBpbmtzY2FwZTpvdXRwdXRfZXh0ZW5zaW9uPSJvcmcuaW5rc2NhcGUub3V0cHV0LnN2Zy5pbmtzY2FwZSI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMjIxNiI+CiAgICA8cmRmOlJERj4KICAgICAgPGNjOldvcmsKICAgICAgICAgcmRmOmFib3V0PSIiPgogICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgICAgIDxkYzp0eXBlCiAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4KICAgICAgPC9jYzpXb3JrPgogICAgPC9yZGY6UkRGPgogIDwvbWV0YWRhdGE+CiAgPGRlZnMKICAgICBpZD0iZGVmczIyMTQiPgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpZD0ibGluZWFyR3JhZGllbnQ0MTcwIj4KICAgICAgPHN0b3AKICAgICAgICAgc3R5bGU9InN0b3AtY29sb3I6I2ZmZmZmZjtzdG9wLW9wYWNpdHk6MTsiCiAgICAgICAgIG9mZnNldD0iMCIKICAgICAgICAgaWQ9InN0b3A0MTcyIiAvPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZjAwO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIxIgogICAgICAgICBpZD0ic3RvcDQxNzQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ0MTcwIgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDE4NCIKICAgICAgIGN4PSI4LjExNDM2OTQiCiAgICAgICBjeT0iLTMuMjk1NjU0OCIKICAgICAgIGZ4PSI4LjExNDM2OTQiCiAgICAgICBmeT0iLTMuMjk1NjU0OCIKICAgICAgIHI9IjExLjA5NjMwNiIKICAgICAgIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMS4xNjYzNjA1LC01LjEwMjEzNjZlLTMsNS43MTQzMTNlLTMsMS4zMDYzMDUyLC0xLjUyNzczMzMsMC42ODU2NDQ1KSIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiAvPgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ0MTg2IgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDE5MiIKICAgICAgIGN4PSIyMy45MTM5NzciCiAgICAgICBjeT0iLTAuMDM3NDI4MDE4IgogICAgICAgZng9IjIzLjkxMzk3NyIKICAgICAgIGZ5PSItMC4wMzc0MjgwMTgiCiAgICAgICByPSIyLjI1IgogICAgICAgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiCiAgICAgICBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDAuODg4NTQyMyw4Ljk0NDgzNjRlLTYsLTEuMTE4ODgzMmUtNSwxLjExMTQ1ODMsMi42ODg5MTcsLTIuMTExNDE4M2UtMikiIC8+CiAgICA8bGluZWFyR3JhZGllbnQKICAgICAgIGlkPSJsaW5lYXJHcmFkaWVudDQxODYiPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIwIgogICAgICAgICBpZD0ic3RvcDQxODgiIC8+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiMwMGZmZmY7c3RvcC1vcGFjaXR5OjE7IgogICAgICAgICBvZmZzZXQ9IjEiCiAgICAgICAgIGlkPSJzdG9wNDE5MCIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQKICAgICAgIGlua3NjYXBlOmNvbGxlY3Q9ImFsd2F5cyIKICAgICAgIHhsaW5rOmhyZWY9IiNsaW5lYXJHcmFkaWVudDQxODYiCiAgICAgICBpZD0icmFkaWFsR3JhZGllbnQ0MTk2IgogICAgICAgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiCiAgICAgICBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDAuODg4NTQyMyw4Ljk0NDgzNjRlLTYsLTEuMTE4ODgzMmUtNSwxLjExMTQ1ODMsMi42ODg5MTcsLTIuMTExNDE4M2UtMikiCiAgICAgICBjeD0iMjMuOTEzOTc3IgogICAgICAgY3k9Ii0wLjAzNzQyODAxOCIKICAgICAgIGZ4PSIyMy45MTM5NzciCiAgICAgICBmeT0iLTAuMDM3NDI4MDE4IgogICAgICAgcj0iMi4yNSIgLz4KICAgIDxsaW5lYXJHcmFkaWVudAogICAgICAgaWQ9ImxpbmVhckdyYWRpZW50MzE2NiI+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiM2NzY3Njc7c3RvcC1vcGFjaXR5OjEuMDAwMDAwMCIKICAgICAgICAgb2Zmc2V0PSIwLjAwMDAwMDAwIgogICAgICAgICBpZD0ic3RvcDMxNjgiIC8+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiM2NTY1NjU7c3RvcC1vcGFjaXR5OjAuMDAwMDAwMDAiCiAgICAgICAgIG9mZnNldD0iMS4wMDAwMDAwIgogICAgICAgICBpZD0ic3RvcDMxNzAiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpZD0ibGluZWFyR3JhZGllbnQ1MTM1Ij4KICAgICAgPHN0b3AKICAgICAgICAgc3R5bGU9InN0b3AtY29sb3I6IzNmM2YzZjtzdG9wLW9wYWNpdHk6MTsiCiAgICAgICAgIG9mZnNldD0iMCIKICAgICAgICAgaWQ9InN0b3A1MTM3IiAvPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIxIgogICAgICAgICBpZD0ic3RvcDUxMzkiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQzMTY2IgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDA2OCIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIgogICAgICAgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjE0MTg2NjQsMCwwLDguMDg5Mjk2N2UtMiwyLjE4NDgzMDEsLTkuMTc2ODg0NikiCiAgICAgICBjeD0iMTI4LjcyNjAxIgogICAgICAgY3k9IjIyOC4zNjcyOSIKICAgICAgIGZ4PSIxMjguNzI2MDEiCiAgICAgICBmeT0iMjI4LjM2NzI5IgogICAgICAgcj0iMTA1LjIxNTY4IiAvPgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ1MTM1IgogICAgICAgaWQ9ImxpbmVhckdyYWRpZW50NDQ1OSIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIgogICAgICAgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjk2Mzc1NTcsMCwwLDAuNzkzMTAxNywtMS42MDE5MTE1LC0zLjQ0NDEyODYpIgogICAgICAgeDE9IjQwLjYwNTIxNyIKICAgICAgIHkxPSIxMi44OTk0MSIKICAgICAgIHgyPSIxNy41OTQyNzYiCiAgICAgICB5Mj0iMzYuOTEzNzk1IiAvPgogICAgPGNsaXBQYXRoCiAgICAgICBjbGlwUGF0aFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIKICAgICAgIGlkPSJjbGlwUGF0aDU1NTQiPgogICAgICA8cGF0aAogICAgICAgICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjY2NjY2NjY2NjY2NjY2NjYyIKICAgICAgICAgaWQ9InBhdGg1NTU2IgogICAgICAgICBkPSJNIDI0LjYwMTY1OCwyNS4xMzY2MDYgQyAyNi42MTExNjYsMjQuNDI3ODI0IDI3LjIyNjk0NiwyMi4yMTA1NjcgMjguMTMzMjc2LDIwLjM4NDk0OSBDIDI5LjE5NTI5OSwxOS4yNzExNTUgMzAuMTEzNTA3LDIxLjgzOTgxNCAzMi4xODQ4MjEsMjEuNjAyMjEyIEMgMzMuNjExMTU1LDIxLjQzOTgwNyAzNS44Nzk1OTcsMTkuMDMxNTc0IDM0Ljk5NTg4MiwxNy40NjM5MzUgQyAzMy4wNTM3NDQsMTUuNzY0NzE3IDMxLjY3MDYzNiwxNy45NTk2MjUgMzAuNDY0Njk0LDE2LjU0NTkyNiBDIDMwLjI4MDU4MiwxNS4wMjI5ODYgMzQuNDc1MjI3LDEzLjkyNDc2MiAzMy40OTIwOSwxMi44MTM0MDMgQyAzMS42OTg0NTksMTEuNDgwNzc5IDI4LjM1NzU0NiwxMS44MjgzMDEgMjUuMTQ4MDYxLDEwLjU5MTg3OCBDIDIzLjcxNTg3OSw4Ljk3MzY5NTIgMjguMzg0MjU0LDkuNjQ3NjIgMjcuMzU2Nzc2LDguMDY3NDE2MyBDIDI2LjkzNTk4Nyw3LjQzMjkwNzMgMjQuMTQzMDExLDUuODg3NzE2OCAyMC45NzYwNDcsNi41NTI3Mzk3IEMgMTguOTQyMjI1LDcuMjI3Njg5MSAyMS4zMzE5MDQsOS4yOTEwMjA4IDE4LjE1MzgwMiw5LjA3NzIwMDYgQyAxNS45ODA1NjUsOC44MDY4MDY4IDEyLjI4NzI0OSw3LjM4OTkxNDEgMTAuMTc3ODkzLDguMDY3NDE1NiBDIDguNTQzNTgzOSw5LjE4NTg1ODQgNy43MzUwMTgyLDEwLjc0NzU0MSA3LjYwMTA2MSwxMS4yOTg3MjcgQyA3LjI2ODk2OSwxMy4wMDQ4NSAxMS4yMDg0ODksMTEuODYwNDY5IDExLjc4MjAyMywxMi4zMDQ4MyBDIDEzLjQ3OTMyMiwxMy43MDM5NTUgOS44NTQ5MTE5LDE1LjQzODUyIDguODMwMzYwMywxNC44NDk1NCBDIDguNDIwNDA5NSwxNC4wMjQ1NSA3LjQyNzU1MzMsMTMuNTk0OTY0IDYuMDYzNjk0MiwxMy44ODUwOSBDIDQuNjc5MjU3NSwxMy45NzA4NiAyLjM1NDQwODUsMTguMDk0NzIyIDMuMDQ3NTA2NywxOS4xNzg3MjkgQyA0LjIwOTI0MDMsMjAuNTMyMzgxIDEwLjQ5OTQxMSwyMi4yNDUxNTQgMTIuMDU1ODQ4LDIyLjA1MTAxOSBDIDE0LjA5MjQ4MiwyMi4xMDMzODIgMTIuOTc0MDA2LDIxLjIxMDg0IDEzLjEyMDI4MywyMC4wNjY5OTMgQyAxMy40MzM4MjIsMTguNjExMzI1IDIwLjY5NjU1OSwyMC42NzczNTggMTkuMTQ5ODYyLDIxLjY2NDEwMyBDIDE3LjA3OTI1MywyMi4wNDYzMTUgMTYuNTA2ODQsMjIuNzU1ODgxIDE3LjI2NjQ0MywyMy40ODM1NTcgQyAxOC42NDMyNjQsMjQuNjUwNTczIDIzLjQzNzU4MSwyNS42ODg5NDIgMjQuNjAxNjU4LDI1LjEzNjYwNiB6ICIKICAgICAgICAgc3R5bGU9Im9wYWNpdHk6MTtmaWxsOiNmZmZmMDA7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjAuNTI5NzI4NDc7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtkaXNwbGF5OmlubGluZSIgLz4KICAgIDwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSI5NjgiCiAgICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxMjgwIgogICAgIGlua3NjYXBlOnBhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBndWlkZXRvbGVyYW5jZT0iMTAuMCIKICAgICBncmlkdG9sZXJhbmNlPSIxMC4wIgogICAgIG9iamVjdHRvbGVyYW5jZT0iMTAuMCIKICAgICBib3JkZXJvcGFjaXR5PSIxLjAiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGlkPSJiYXNlIgogICAgIGlua3NjYXBlOnpvb209IjQiCiAgICAgaW5rc2NhcGU6Y3g9IjU5LjM0NTg5OCIKICAgICBpbmtzY2FwZTpjeT0iMjQuNDgzNzkiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9Ii00IgogICAgIGlua3NjYXBlOndpbmRvdy15PSItNCIKICAgICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJsYXllcjIiCiAgICAgd2lkdGg9IjQzcHgiCiAgICAgaGVpZ2h0PSI0My41Mjk5OTlweCIgLz4KICA8ZwogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMiIKICAgICBpbmtzY2FwZTpsYWJlbD0iUGFjbWFuIgogICAgIHN0eWxlPSJkaXNwbGF5OmlubGluZSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjY0NSwxNS4xMTAwMDcpIj4KICAgIDxwYXRoCiAgICAgICBzb2RpcG9kaTp0eXBlPSJhcmMiCiAgICAgICBzdHlsZT0iZmlsbDp1cmwoI3JhZGlhbEdyYWRpZW50NDE4NCk7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuMDAwMzYzMTE7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLWRhc2hvZmZzZXQ6MDtzdHJva2Utb3BhY2l0eToxIgogICAgICAgaWQ9InBhdGgzMTc4IgogICAgICAgc29kaXBvZGk6Y3g9IjE0LjYiCiAgICAgICBzb2RpcG9kaTpjeT0iMi4yIgogICAgICAgc29kaXBvZGk6cng9IjExLjQiCiAgICAgICBzb2RpcG9kaTpyeT0iMTEuNCIKICAgICAgIGQ9Ik0gMjQuNDcyNjksNy44OTk5OTk5IEEgMTEuNCwxMS40IDAgMSAxIDI0LjQ3MjY4OSwtMy41MDAwMDAxIEwgMTQuNiwyLjIgeiIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuNTczNjQyNiwwLDAsMS40Njg0MzYxLC0xLjEyMjMwMzUsMi41ODIyNzk5KSIKICAgICAgIHNvZGlwb2RpOnN0YXJ0PSIwLjUyMzU5ODc4IgogICAgICAgc29kaXBvZGk6ZW5kPSI1Ljc1OTU4NjUiIC8+CiAgICA8cGF0aAogICAgICAgc29kaXBvZGk6dHlwZT0iYXJjIgogICAgICAgc3R5bGU9ImZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1kYXNob2Zmc2V0OjA7c3Ryb2tlLW9wYWNpdHk6MSIKICAgICAgIGlkPSJwYXRoNDE1OCIKICAgICAgIHNvZGlwb2RpOmN4PSIxOSIKICAgICAgIHNvZGlwb2RpOmN5PSItNiIKICAgICAgIHNvZGlwb2RpOnJ4PSIxIgogICAgICAgc29kaXBvZGk6cnk9IjEiCiAgICAgICBkPSJNIDIwIC02IEEgMSAxIDAgMSAxICAxOCwtNiBBIDEgMSAwIDEgMSAgMjAgLTYgeiIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuNTc0NzkyNiwwLDAsMS40Njg0Mjk3LC04LjA2ODE3ODksNC4zNDQ0MDU4KSIgLz4KICA8L2c+Cjwvc3ZnPgo=`
 const favicon = `AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAJycnAAkJCQACAgIABAQEAEZGRgABAQEAGhoaABUVFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAABwAFAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAAAAAAAACAAAAAAAAAAAAAAAAAAYAAAAAAPg/AADoZwAAyIMAAIkBAACP/wAAj/AAAE/4AAAv+AAAH/QAAB/yAAAP8QAA//EAAIDRAADBEwAA4hcAAPwfAAA=`
+const getpost_css = `
+body{
+    margin: 0 auto;
+    font-family: Georgia, Palatino, serif;
+    color: #444444;
+    line-height: 1;
+    max-width: 960px;
+    padding: 12px;
+}
+h1, h2, h3, h4 {
+    color: #111111;
+    font-weight: 400;
+}
+h1, h2, h3, h4, h5, p {
+/*    margin-bottom: 24px; */
+    padding: 0;
+}
+h1 {
+    font-size: 48px;
+}
+h2 {
+	margin-top: 36px;
+/*	border-bottom: 1px solid #999; */
+    font-size: 36px;
+	margin-bottom: 8px;
+}
+h3 {
+    font-size: 24px;
+}
+h4 {
+	line-height: 23px;
+    font-size: 21px;
+}
+h4 time{
+	font-size: 18px;
+	margin-left: 100px;
+	float:right;
+}
+h5 {
+    font-size: 18px;
+}
+a:link {
+    color: #000000;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+}
+a:visited {
+    color: #000000;
+}
+a:hover {
+    text-decoration: none;
+    color: #ff6600;
+}
+ul, ol {
+    padding: 0;
+    margin: 0;
+}
+li {
+    line-height: 24px;
+}
+li ul, li ul {
+    margin-left: 24px;
+}
+p, ul, ol {
+    font-size: 16px;
+    line-height: 24px;
+    max-width: 540px;
+}
+pre {
+    padding: 0px 24px;
+    max-width: 800px;
+    white-space: pre-wrap;
+}
+code {
+    font-family: Consolas, Monaco, Andale Mono, monospace;
+    line-height: 1.5;
+    font-size: 13px;
+}
+aside {
+    display: block;
+    float: right;
+    width: 390px;
+}
+blockquote {
+    border-left:.5em solid #eee;
+    padding: 0 2em;
+    margin-left:0;
+    max-width: 476px;
+}
+blockquote  cite {
+    font-size:14px;
+    line-height:20px;
+    color:#bfbfbf;
+}
+blockquote cite:before {
+    content: '&mdash;'
+}
+
+blockquote p {  
+    color: #666;
+    max-width: 460px;
+}
+hr {
+    width: 840px;
+    margin: 0 auto 0 auto;
+    color: #999;
+}`
 const upload = `<html><head>
 <link rel="shortcut icon" href="data:image/x-icon;base64,${favicon} />
+<link rel="stylesheet" href="getpost.css">
 <title>upload</title>
 <div id="wrap">
     <div id="form">
@@ -318,6 +427,7 @@ function getHtmlFromMarkdown(content) {
 			type = DEFAULT_MIME_TEXT; // Or you can use the blob.type as fallback
 			break;
 	}
+	// <iframe src="data:application/pdf;base64,YOUR_BINARY_DATA" height="100%" width="100%"></iframe> - todo
     const injector = ( type == DEFAULT_MIME_TEXT) ? `document.getElementById('content').innerHTML = marked(atob(b64encoded))` : `document.getElementById('imgContent').src = "data:${type};base64," + b64encoded`
 	const wrapped = `
     <!doctype html>
@@ -327,115 +437,7 @@ function getHtmlFromMarkdown(content) {
   <title>${title}</title>
 </head>
 <body>
-<style>
-body{
-    margin: 0 auto;
-    font-family: Georgia, Palatino, serif;
-    color: #444444;
-    line-height: 1;
-    max-width: 960px;
-    padding: 12px;
-}
-h1, h2, h3, h4 {
-    color: #111111;
-    font-weight: 400;
-}
-h1, h2, h3, h4, h5, p {
-/*    margin-bottom: 24px; */
-    padding: 0;
-}
-h1 {
-    font-size: 48px;
-}
-h2 {
-	margin-top: 36px;
-/*	border-bottom: 1px solid #999; */
-    font-size: 36px;
-	margin-bottom: 8px;
-}
-h3 {
-    font-size: 24px;
-}
-h4 {
-	line-height: 23px;
-    font-size: 21px;
-}
-h4 time{
-	font-size: 18px;
-	margin-left: 100px;
-	float:right;
-}
-h5 {
-    font-size: 18px;
-}
-a:link {
-    color: #000000;
-    margin: 0;
-    padding: 0;
-    vertical-align: baseline;
-}
-a:visited {
-    color: #000000;
-}
-a:hover {
-    text-decoration: none;
-    color: #ff6600;
-}
-ul, ol {
-    padding: 0;
-    margin: 0;
-}
-li {
-    line-height: 24px;
-}
-li ul, li ul {
-    margin-left: 24px;
-}
-p, ul, ol {
-    font-size: 16px;
-    line-height: 24px;
-    max-width: 540px;
-}
-pre {
-    padding: 0px 24px;
-    max-width: 800px;
-    white-space: pre-wrap;
-}
-code {
-    font-family: Consolas, Monaco, Andale Mono, monospace;
-    line-height: 1.5;
-    font-size: 13px;
-}
-aside {
-    display: block;
-    float: right;
-    width: 390px;
-}
-blockquote {
-    border-left:.5em solid #eee;
-    padding: 0 2em;
-    margin-left:0;
-    max-width: 476px;
-}
-blockquote  cite {
-    font-size:14px;
-    line-height:20px;
-    color:#bfbfbf;
-}
-blockquote cite:before {
-    content: '&mdash;'
-}
-
-blockquote p {  
-    color: #666;
-    max-width: 460px;
-}
-hr {
-    width: 840px;
-    margin: 0 auto 0 auto;
-    color: #999;
-}
-</style>
+<link rel="stylesheet" href="getpost.css">
   <div id="content"></div>
   <img id="imgContent" src=""></img>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -761,6 +763,7 @@ async function do_work_with_fetch_event(fetch_event) {
 		if (url.pathname.startsWith("/post")) {
 			if (request.method == "POST") {
 				let my_ulid = ulid(now)
+				let delete_key = ulid(now)
 				const my_body = await request.arrayBuffer()
 				// = await request.arrayBuffer();
                 var parts = []
@@ -771,8 +774,7 @@ async function do_work_with_fetch_event(fetch_event) {
                 catch {
                 }
 				if (parts.length === 0) { // not multipart - data binary, for example
-                 blob = my_body // probably optimised out
-					// continue // blob defaults to my_body
+                 blob = my_body
 				} else if (parts.length > 1) {
 					return new Response('One file at a time, please!');
 				} else { // normal multipart upload, one file
@@ -780,7 +782,7 @@ async function do_work_with_fetch_event(fetch_event) {
 					blob = my_body.slice(part.index, part.index + part.length);
 				}
                 blob = await (new Blob([blob, my_ulid])).arrayBuffer() // postpend ULID to blob
-
+// TODO
 // const overheadLength = nacl.box.publicKeyLength + nacl.box.overheadLength;
 	// var c = new Uint8Array(overheadLength + blob.length)
 	// var ek = nacl.box.keyPair();
@@ -804,10 +806,12 @@ async function do_work_with_fetch_event(fetch_event) {
 				const body_sha256 = await crypto.subtle.digest("SHA-256", blob).then(function(hash) {
 					return hex(hash)
 				})
-				const key = `${my_ulid}_${body_sha256}`
-				const expire_time = Date.now + expiry.expirationTtl
-				await NAMESPACE.put(key, blob, expiry)
-				return rawHtmlResponse(`${url.href}?key=${key}`)
+				const store_key = `${my_ulid}_${body_sha256}`
+				await NAMESPACE.put(store_key, blob, expiry)
+				await NAMESPACE.put(delete_key, store_key, expiry)
+				return rawHtmlResponse(`view: ${url.href}?key=${store_key}
+				delete: ${url.href.replace('post', 'delete')}?key=${delete_key}
+				expires in: 1 year`)
 			}
 			if (request.method == "GET") {
 				const key = url.searchParams.get("key")
@@ -826,12 +830,17 @@ async function do_work_with_fetch_event(fetch_event) {
 				}
 			}
 		} else if (url.pathname == "/delete") {
-			const key = url.searchParams.get("key")
+			const delete_key = url.searchParams.get("key")
 			if (key == undefined) {
-				return rawHtmlResponse(`Provide a key as query parameter! ${url.href}?key=${key}`)
+				return rawHtmlResponse(`Provide a delete key as query parameter! ie) ${url.href}?key=KEY`)
 			}
-			return rawHtmlResponse(await NAMESPACE.delete(key))
-		}
+			const target_key = await NAMESPACE.get(key)
+			if (target_key == undefined) {
+				return rawHtmlResponse(`Sorry - Can't find this key!`)
+			}
+			const deleted = await NAMESPACE.delete(target_key)
+			const deleted_delete = await NAMESPACE.delete(key)
+			return rawHtmlResponse(`OK, sent command to delete ${target_key} using ${key} - will take up to a few minutes to fully be purged.`)
 		} else if (url.pathname == '/headers') {
 			return new Response(JSON.stringify(header_obj) + "\n")
     	} else if (url.pathname == '/echo') {
@@ -840,9 +849,10 @@ async function do_work_with_fetch_event(fetch_event) {
 			return new Response(JSON.stringify(Date.now()) + "\n")
 		} else if (url.pathname == '/raise_exception') {
 			yolo
+		} else if (url.pathname == "/getpost.css") {
+			return rawHtmlResponse(getpost_css, "text/css")
 		} else {
 			return rawHtmlResponse("Sorry, not found!")
-
 		}
 	} catch (err) {
 		return new Response(JSON.stringify(header_obj) + '\n' + err.stack, {
