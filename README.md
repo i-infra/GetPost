@@ -146,7 +146,6 @@ I'm copypastaing it from the Cloudflare web editor periodically. SMH.
 ### What's next?
 
  * asymmetric crypto with tweetnacl, kinda was the point
- * PDFs in iframes, fixing some edge cases
  * operational transform editing - editing / versioning with binary diffs
  * pay someone to rebuild this in typescript, and rebuild it in ultra-minimal async python3
  * find some way of coming up wtih $5/mo not-out-of-my-pocket, to run this indefinitely, at scale, for my friends
