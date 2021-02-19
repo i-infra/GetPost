@@ -85,7 +85,8 @@ function b32decode (input) {
   return output
 }
 
-const DEFAULT_MIME_TEXT = "text/plain"
+const DEFAULT_MIME_TEXT = "text/raw; charset=UTF-8"
+const DEFAULT_MIME_HTML = "text/html; charset=UTF-8"
 const pacman_svg = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgo8c3ZnCiAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgeG1sbnM6Y2M9Imh0dHA6Ly93ZWIucmVzb3VyY2Uub3JnL2NjLyIKICAgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICBpZD0ic3ZnMjIxMSIKICAgc29kaXBvZGk6dmVyc2lvbj0iMC4zMiIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMC40NS4xIgogICB3aWR0aD0iNDIuMjc5OTk5IgogICBoZWlnaHQ9IjQyLjI3OTk5OSIKICAgdmVyc2lvbj0iMS4wIgogICBzb2RpcG9kaTpkb2NiYXNlPSJDOlxEb2t1bWVudGUgdW5kIEVpbnN0ZWxsdW5nZW5cQmlhbmNhIEtyb25hd2V0dGVyXERlc2t0b3BcUGgiCiAgIHNvZGlwb2RpOmRvY25hbWU9IlBhYy1NYW4uc3ZnIgogICBpbmtzY2FwZTpvdXRwdXRfZXh0ZW5zaW9uPSJvcmcuaW5rc2NhcGUub3V0cHV0LnN2Zy5pbmtzY2FwZSI+CiAgPG1ldGFkYXRhCiAgICAgaWQ9Im1ldGFkYXRhMjIxNiI+CiAgICA8cmRmOlJERj4KICAgICAgPGNjOldvcmsKICAgICAgICAgcmRmOmFib3V0PSIiPgogICAgICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgICAgIDxkYzp0eXBlCiAgICAgICAgICAgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIgLz4KICAgICAgPC9jYzpXb3JrPgogICAgPC9yZGY6UkRGPgogIDwvbWV0YWRhdGE+CiAgPGRlZnMKICAgICBpZD0iZGVmczIyMTQiPgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpZD0ibGluZWFyR3JhZGllbnQ0MTcwIj4KICAgICAgPHN0b3AKICAgICAgICAgc3R5bGU9InN0b3AtY29sb3I6I2ZmZmZmZjtzdG9wLW9wYWNpdHk6MTsiCiAgICAgICAgIG9mZnNldD0iMCIKICAgICAgICAgaWQ9InN0b3A0MTcyIiAvPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZjAwO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIxIgogICAgICAgICBpZD0ic3RvcDQxNzQiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ0MTcwIgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDE4NCIKICAgICAgIGN4PSI4LjExNDM2OTQiCiAgICAgICBjeT0iLTMuMjk1NjU0OCIKICAgICAgIGZ4PSI4LjExNDM2OTQiCiAgICAgICBmeT0iLTMuMjk1NjU0OCIKICAgICAgIHI9IjExLjA5NjMwNiIKICAgICAgIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMS4xNjYzNjA1LC01LjEwMjEzNjZlLTMsNS43MTQzMTNlLTMsMS4zMDYzMDUyLC0xLjUyNzczMzMsMC42ODU2NDQ1KSIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiAvPgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ0MTg2IgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDE5MiIKICAgICAgIGN4PSIyMy45MTM5NzciCiAgICAgICBjeT0iLTAuMDM3NDI4MDE4IgogICAgICAgZng9IjIzLjkxMzk3NyIKICAgICAgIGZ5PSItMC4wMzc0MjgwMTgiCiAgICAgICByPSIyLjI1IgogICAgICAgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiCiAgICAgICBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDAuODg4NTQyMyw4Ljk0NDgzNjRlLTYsLTEuMTE4ODgzMmUtNSwxLjExMTQ1ODMsMi42ODg5MTcsLTIuMTExNDE4M2UtMikiIC8+CiAgICA8bGluZWFyR3JhZGllbnQKICAgICAgIGlkPSJsaW5lYXJHcmFkaWVudDQxODYiPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIwIgogICAgICAgICBpZD0ic3RvcDQxODgiIC8+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiMwMGZmZmY7c3RvcC1vcGFjaXR5OjE7IgogICAgICAgICBvZmZzZXQ9IjEiCiAgICAgICAgIGlkPSJzdG9wNDE5MCIgLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8cmFkaWFsR3JhZGllbnQKICAgICAgIGlua3NjYXBlOmNvbGxlY3Q9ImFsd2F5cyIKICAgICAgIHhsaW5rOmhyZWY9IiNsaW5lYXJHcmFkaWVudDQxODYiCiAgICAgICBpZD0icmFkaWFsR3JhZGllbnQ0MTk2IgogICAgICAgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiCiAgICAgICBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDAuODg4NTQyMyw4Ljk0NDgzNjRlLTYsLTEuMTE4ODgzMmUtNSwxLjExMTQ1ODMsMi42ODg5MTcsLTIuMTExNDE4M2UtMikiCiAgICAgICBjeD0iMjMuOTEzOTc3IgogICAgICAgY3k9Ii0wLjAzNzQyODAxOCIKICAgICAgIGZ4PSIyMy45MTM5NzciCiAgICAgICBmeT0iLTAuMDM3NDI4MDE4IgogICAgICAgcj0iMi4yNSIgLz4KICAgIDxsaW5lYXJHcmFkaWVudAogICAgICAgaWQ9ImxpbmVhckdyYWRpZW50MzE2NiI+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiM2NzY3Njc7c3RvcC1vcGFjaXR5OjEuMDAwMDAwMCIKICAgICAgICAgb2Zmc2V0PSIwLjAwMDAwMDAwIgogICAgICAgICBpZD0ic3RvcDMxNjgiIC8+CiAgICAgIDxzdG9wCiAgICAgICAgIHN0eWxlPSJzdG9wLWNvbG9yOiM2NTY1NjU7c3RvcC1vcGFjaXR5OjAuMDAwMDAwMDAiCiAgICAgICAgIG9mZnNldD0iMS4wMDAwMDAwIgogICAgICAgICBpZD0ic3RvcDMxNzAiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpZD0ibGluZWFyR3JhZGllbnQ1MTM1Ij4KICAgICAgPHN0b3AKICAgICAgICAgc3R5bGU9InN0b3AtY29sb3I6IzNmM2YzZjtzdG9wLW9wYWNpdHk6MTsiCiAgICAgICAgIG9mZnNldD0iMCIKICAgICAgICAgaWQ9InN0b3A1MTM3IiAvPgogICAgICA8c3RvcAogICAgICAgICBzdHlsZT0ic3RvcC1jb2xvcjojZmZmZmZmO3N0b3Atb3BhY2l0eToxOyIKICAgICAgICAgb2Zmc2V0PSIxIgogICAgICAgICBpZD0ic3RvcDUxMzkiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPHJhZGlhbEdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQzMTY2IgogICAgICAgaWQ9InJhZGlhbEdyYWRpZW50NDA2OCIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIgogICAgICAgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjE0MTg2NjQsMCwwLDguMDg5Mjk2N2UtMiwyLjE4NDgzMDEsLTkuMTc2ODg0NikiCiAgICAgICBjeD0iMTI4LjcyNjAxIgogICAgICAgY3k9IjIyOC4zNjcyOSIKICAgICAgIGZ4PSIxMjguNzI2MDEiCiAgICAgICBmeT0iMjI4LjM2NzI5IgogICAgICAgcj0iMTA1LjIxNTY4IiAvPgogICAgPGxpbmVhckdyYWRpZW50CiAgICAgICBpbmtzY2FwZTpjb2xsZWN0PSJhbHdheXMiCiAgICAgICB4bGluazpocmVmPSIjbGluZWFyR3JhZGllbnQ1MTM1IgogICAgICAgaWQ9ImxpbmVhckdyYWRpZW50NDQ1OSIKICAgICAgIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIgogICAgICAgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgwLjk2Mzc1NTcsMCwwLDAuNzkzMTAxNywtMS42MDE5MTE1LC0zLjQ0NDEyODYpIgogICAgICAgeDE9IjQwLjYwNTIxNyIKICAgICAgIHkxPSIxMi44OTk0MSIKICAgICAgIHgyPSIxNy41OTQyNzYiCiAgICAgICB5Mj0iMzYuOTEzNzk1IiAvPgogICAgPGNsaXBQYXRoCiAgICAgICBjbGlwUGF0aFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIKICAgICAgIGlkPSJjbGlwUGF0aDU1NTQiPgogICAgICA8cGF0aAogICAgICAgICBzb2RpcG9kaTpub2RldHlwZXM9ImNjY2NjY2NjY2NjY2NjY2NjY2NjYyIKICAgICAgICAgaWQ9InBhdGg1NTU2IgogICAgICAgICBkPSJNIDI0LjYwMTY1OCwyNS4xMzY2MDYgQyAyNi42MTExNjYsMjQuNDI3ODI0IDI3LjIyNjk0NiwyMi4yMTA1NjcgMjguMTMzMjc2LDIwLjM4NDk0OSBDIDI5LjE5NTI5OSwxOS4yNzExNTUgMzAuMTEzNTA3LDIxLjgzOTgxNCAzMi4xODQ4MjEsMjEuNjAyMjEyIEMgMzMuNjExMTU1LDIxLjQzOTgwNyAzNS44Nzk1OTcsMTkuMDMxNTc0IDM0Ljk5NTg4MiwxNy40NjM5MzUgQyAzMy4wNTM3NDQsMTUuNzY0NzE3IDMxLjY3MDYzNiwxNy45NTk2MjUgMzAuNDY0Njk0LDE2LjU0NTkyNiBDIDMwLjI4MDU4MiwxNS4wMjI5ODYgMzQuNDc1MjI3LDEzLjkyNDc2MiAzMy40OTIwOSwxMi44MTM0MDMgQyAzMS42OTg0NTksMTEuNDgwNzc5IDI4LjM1NzU0NiwxMS44MjgzMDEgMjUuMTQ4MDYxLDEwLjU5MTg3OCBDIDIzLjcxNTg3OSw4Ljk3MzY5NTIgMjguMzg0MjU0LDkuNjQ3NjIgMjcuMzU2Nzc2LDguMDY3NDE2MyBDIDI2LjkzNTk4Nyw3LjQzMjkwNzMgMjQuMTQzMDExLDUuODg3NzE2OCAyMC45NzYwNDcsNi41NTI3Mzk3IEMgMTguOTQyMjI1LDcuMjI3Njg5MSAyMS4zMzE5MDQsOS4yOTEwMjA4IDE4LjE1MzgwMiw5LjA3NzIwMDYgQyAxNS45ODA1NjUsOC44MDY4MDY4IDEyLjI4NzI0OSw3LjM4OTkxNDEgMTAuMTc3ODkzLDguMDY3NDE1NiBDIDguNTQzNTgzOSw5LjE4NTg1ODQgNy43MzUwMTgyLDEwLjc0NzU0MSA3LjYwMTA2MSwxMS4yOTg3MjcgQyA3LjI2ODk2OSwxMy4wMDQ4NSAxMS4yMDg0ODksMTEuODYwNDY5IDExLjc4MjAyMywxMi4zMDQ4MyBDIDEzLjQ3OTMyMiwxMy43MDM5NTUgOS44NTQ5MTE5LDE1LjQzODUyIDguODMwMzYwMywxNC44NDk1NCBDIDguNDIwNDA5NSwxNC4wMjQ1NSA3LjQyNzU1MzMsMTMuNTk0OTY0IDYuMDYzNjk0MiwxMy44ODUwOSBDIDQuNjc5MjU3NSwxMy45NzA4NiAyLjM1NDQwODUsMTguMDk0NzIyIDMuMDQ3NTA2NywxOS4xNzg3MjkgQyA0LjIwOTI0MDMsMjAuNTMyMzgxIDEwLjQ5OTQxMSwyMi4yNDUxNTQgMTIuMDU1ODQ4LDIyLjA1MTAxOSBDIDE0LjA5MjQ4MiwyMi4xMDMzODIgMTIuOTc0MDA2LDIxLjIxMDg0IDEzLjEyMDI4MywyMC4wNjY5OTMgQyAxMy40MzM4MjIsMTguNjExMzI1IDIwLjY5NjU1OSwyMC42NzczNTggMTkuMTQ5ODYyLDIxLjY2NDEwMyBDIDE3LjA3OTI1MywyMi4wNDYzMTUgMTYuNTA2ODQsMjIuNzU1ODgxIDE3LjI2NjQ0MywyMy40ODM1NTcgQyAxOC42NDMyNjQsMjQuNjUwNTczIDIzLjQzNzU4MSwyNS42ODg5NDIgMjQuNjAxNjU4LDI1LjEzNjYwNiB6ICIKICAgICAgICAgc3R5bGU9Im9wYWNpdHk6MTtmaWxsOiNmZmZmMDA7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjAuNTI5NzI4NDc7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MTtkaXNwbGF5OmlubGluZSIgLz4KICAgIDwvY2xpcFBhdGg+CiAgPC9kZWZzPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSI5NjgiCiAgICAgaW5rc2NhcGU6d2luZG93LXdpZHRoPSIxMjgwIgogICAgIGlua3NjYXBlOnBhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBndWlkZXRvbGVyYW5jZT0iMTAuMCIKICAgICBncmlkdG9sZXJhbmNlPSIxMC4wIgogICAgIG9iamVjdHRvbGVyYW5jZT0iMTAuMCIKICAgICBib3JkZXJvcGFjaXR5PSIxLjAiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGlkPSJiYXNlIgogICAgIGlua3NjYXBlOnpvb209IjQiCiAgICAgaW5rc2NhcGU6Y3g9IjU5LjM0NTg5OCIKICAgICBpbmtzY2FwZTpjeT0iMjQuNDgzNzkiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9Ii00IgogICAgIGlua3NjYXBlOndpbmRvdy15PSItNCIKICAgICBpbmtzY2FwZTpjdXJyZW50LWxheWVyPSJsYXllcjIiCiAgICAgd2lkdGg9IjQzcHgiCiAgICAgaGVpZ2h0PSI0My41Mjk5OTlweCIgLz4KICA8ZwogICAgIGlua3NjYXBlOmdyb3VwbW9kZT0ibGF5ZXIiCiAgICAgaWQ9ImxheWVyMiIKICAgICBpbmtzY2FwZTpsYWJlbD0iUGFjbWFuIgogICAgIHN0eWxlPSJkaXNwbGF5OmlubGluZSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLjY0NSwxNS4xMTAwMDcpIj4KICAgIDxwYXRoCiAgICAgICBzb2RpcG9kaTp0eXBlPSJhcmMiCiAgICAgICBzdHlsZT0iZmlsbDp1cmwoI3JhZGlhbEdyYWRpZW50NDE4NCk7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOm5vbnplcm87c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEuMDAwMzYzMTE7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46bWl0ZXI7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLWRhc2hvZmZzZXQ6MDtzdHJva2Utb3BhY2l0eToxIgogICAgICAgaWQ9InBhdGgzMTc4IgogICAgICAgc29kaXBvZGk6Y3g9IjE0LjYiCiAgICAgICBzb2RpcG9kaTpjeT0iMi4yIgogICAgICAgc29kaXBvZGk6cng9IjExLjQiCiAgICAgICBzb2RpcG9kaTpyeT0iMTEuNCIKICAgICAgIGQ9Ik0gMjQuNDcyNjksNy44OTk5OTk5IEEgMTEuNCwxMS40IDAgMSAxIDI0LjQ3MjY4OSwtMy41MDAwMDAxIEwgMTQuNiwyLjIgeiIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuNTczNjQyNiwwLDAsMS40Njg0MzYxLC0xLjEyMjMwMzUsMi41ODIyNzk5KSIKICAgICAgIHNvZGlwb2RpOnN0YXJ0PSIwLjUyMzU5ODc4IgogICAgICAgc29kaXBvZGk6ZW5kPSI1Ljc1OTU4NjUiIC8+CiAgICA8cGF0aAogICAgICAgc29kaXBvZGk6dHlwZT0iYXJjIgogICAgICAgc3R5bGU9ImZpbGw6IzAwMDAwMDtmaWxsLW9wYWNpdHk6MTtzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MS41O3N0cm9rZS1saW5lY2FwOmJ1dHQ7c3Ryb2tlLWxpbmVqb2luOm1pdGVyO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1kYXNob2Zmc2V0OjA7c3Ryb2tlLW9wYWNpdHk6MSIKICAgICAgIGlkPSJwYXRoNDE1OCIKICAgICAgIHNvZGlwb2RpOmN4PSIxOSIKICAgICAgIHNvZGlwb2RpOmN5PSItNiIKICAgICAgIHNvZGlwb2RpOnJ4PSIxIgogICAgICAgc29kaXBvZGk6cnk9IjEiCiAgICAgICBkPSJNIDIwIC02IEEgMSAxIDAgMSAxICAxOCwtNiBBIDEgMSAwIDEgMSAgMjAgLTYgeiIKICAgICAgIHRyYW5zZm9ybT0ibWF0cml4KDEuNTc0NzkyNiwwLDAsMS40Njg0Mjk3LC04LjA2ODE3ODksNC4zNDQ0MDU4KSIgLz4KICA8L2c+Cjwvc3ZnPgo="
 
 const favicon = "AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAJycnAAkJCQACAgIABAQEAEZGRgABAQEAGhoaABUVFQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAABwAFAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAADAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAgAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAACAAQAAAAAAAACAAAAAAAAAAAAAAAAAAYAAAAAAPg/AADoZwAAyIMAAIkBAACP/wAAj/AAAE/4AAAv+AAAH/QAAB/yAAAP8QAA//EAAIDRAADBEwAA4hcAAPwfAAA="
@@ -105,7 +106,6 @@ h1, h2, h3, h4 {
     font-weight: 400;
 }
 h1, h2, h3, h4, h5, p {
-/*    margin-bottom: 24px; */
     padding: 0;
 }
 h1 {
@@ -113,7 +113,6 @@ h1 {
 }
 h2 {
   margin-top: 36px;
-/*  border-bottom: 1px solid #999; */
     font-size: 36px;
   margin-bottom: 8px;
 }
@@ -201,43 +200,70 @@ hr {
 }`
 
 const upload = `<html><head>
-<link rel="shortcut icon" href="data:image/x-icon;base64,${favicon}" />
 <link rel="stylesheet" href="/getpost.css">
 <title>GetPost: Upload</title>
+<meta name="title" content="GetPost: File Upload">
+<meta name="description" content="Share the love!">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://getpost.bitsandpieces.io/"">
+<meta property="twitter:title" content="GetPost: Upload">
+<meta property="twitter:description" content="Libre linking for poems and memes. Share the love!">
+<meta property="twitter:image" content="https://getpost.bitsandpieces.io/post?key=01EYWFTY440WJFRAC6MX8VZ5YK&raw">
 </head>
 <body>
 <div id="wrap">
     <div id="form">
       <form method="post" enctype="multipart/form-data" action="/post" method="post" >
         <input name="upfile" type="file">
-        <input value="Send" onclick="swap()" type="submit">
+        <input value="Post" onclick="swap()" type="submit">
       </form>
     </div>
   </div>
   <table id="userinfo"><tr>
-    <td><div id="picture"><img src="data:image/svg+xml;base64,${pacman_svg}"/></div></td>
+    <td><div id="notpacman"><img src="data:image/svg+xml;base64,${pacman_svg}"/></div></td>
     <td id="message"> omnomnom files.<br/></td>
   </tr></table>
 </div></body></html> 
 `
-function get_wrapped(encoded_payload, injector, type){
-  // pdf injector is redirect to -> &raw, so zero out payload
-  if (type == "application/pdf" ) { encoded_payload = ""}
+
+function get_wrapped(content, injector, type, url){
+  const TITLE = `GetPost: ${type}`
+  if (type == "application/pdf" ) { var encoded_payload = ""} else { var encoded_payload = b32encode(content) }
+  if (type == DEFAULT_MIME_TEXT ) { var description = (new TextDecoder("utf-8")).decode(new Uint8Array(content.slice(0,140))); } else { var description = "GetPost: "+type; }
+  if (type.startsWith("image/") ) { var image_url = url.toString()+"&raw" } else { var image_url = "" }
   const html = `
-    <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <title>GetPost: Content</title>
+<!-- Primary Meta Tags -->
+<title>GetPost: Content</title>
+<meta name="title" content="${TITLE}">
+<meta name="description" content="${description}">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:url" content="${url.toString()}">
+<meta property="og:title" content="${TITLE}">
+<meta property="og:description" content="${description}">
+<meta property="og:image" content="${image_url}">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="${url.toString()}">
+<meta property="twitter:title" content="${TITLE}">
+<meta property="twitter:description" content="${description}">
+<meta property="twitter:image" content="${image_url}">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 </head>
 <body>
 <link rel="stylesheet" href="getpost.css">
-  <div id="content" src="">
-  <img id="imgContent" src=""></img>
+  <div id="content">
+    <img id="imgContent" src=""></img>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+      var payload_type = "${type}";
+      </script>
   <script>
       var payload = "${encoded_payload}";
       </script>
@@ -296,7 +322,7 @@ function toBase64(dataArr){
     var outputLen = ((len/3) * 4) + (padding > 0 ? 4 : 0);
     var output = new Uint8Array(outputLen);
     var outputCtr = 0;
-    for(var i=0; i<len; i+=3){              
+    for(var i=0; i<len; i+=3){
         var buffer = ((dataArr[i] & 0xFF) << 16) | ((dataArr[i+1] & 0xFF) << 8) | (dataArr[i+2] & 0xFF);
         output[outputCtr++] = base64Table[buffer >> 18];
         output[outputCtr++] = base64Table[(buffer >> 12) & 0x3F];
@@ -316,7 +342,6 @@ function toBase64(dataArr){
         output[outputCtr++] = base64Table[64];
         output[outputCtr++] = base64Table[64];
     }
-    
     var ret = decoder.decode(output);
     output = null;
     dataArr = null;
@@ -328,19 +353,6 @@ function toBase64(dataArr){
 </body>
 </html>`
 return html
-}
-
-function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
-}
-
-function str2ab(str) {
-  var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-  var bufView = new Uint16Array(buf);
-  for (var i = 0, strLen = str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
-  }
-  return buf;
 }
 
 function createError(message) {
@@ -473,39 +485,39 @@ function detectPrng(allowInsecure = false, root) {
   throw createError("secure crypto unusable, insecure Math.random not allowed");
 }
 
-function monotonicFactory(currPrng) {
-  if (!currPrng) {
-    currPrng = detectPrng();
-  }
-  let lastTime = 0;
-  let lastRandom;
-  return function ulid(seedTime) {
-    if (isNaN(seedTime)) {
-      seedTime = Date.now();
+function factory(currPrng) {
+    if (!currPrng) {
+        currPrng = detectPrng();
     }
-    if (seedTime <= lastTime) {
-      const incrementedRandom = (lastRandom = incrementBase32(lastRandom));
-      return encodeTime(lastTime, TIME_LEN) + incrementedRandom;
-    }
-    lastTime = seedTime;
-    const newRandom = (lastRandom = encodeRandom(RANDOM_LEN, currPrng));
-    return encodeTime(seedTime, TIME_LEN) + newRandom;
-  };
+    return function ulid(seedTime) {
+        if (isNaN(seedTime)) {
+            seedTime = Date.now();
+        }
+        return encodeTime(seedTime, TIME_LEN) + encodeRandom(RANDOM_LEN, currPrng);
+    };
 }
-const ulid = monotonicFactory();
 
-function getHtmlFromMarkdown(content) {
-  if ( (content == null) || (content == undefined)) {
-    return "CONTENT NOT FOUND", DEFAULT_MIME_TEXT
+
+function str2ab(str) {
+  var buf = new ArrayBuffer(str.length);
+  var bufView = new Uint8Array(buf);
+  for (var i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i)&0xFF;
   }
-    let uint8_array = new Uint8Array(content);
-  let encoded_payload = b32encode(uint8_array)
-  let header = hex(content.slice(0, 4))
+  return buf;
+}
+
+function wrap_content(content, url="") {
+  if ( (content == null) || (content == undefined)) {
+    return "CONTENT NOT FOUND"
+  }
+  let uint8_array = new Uint8Array(content);
+  let header = hex(uint8_array.slice(0, 4))
   var injector, type;
-  switch (header) {
-        case "25504446":
-            type = "application/pdf";
-            break;
+  switch (header.toLowerCase()) {
+    case "25504446":
+      type = "application/pdf";
+      break;
     case "89504e47":
       type = "image/png";
       break;
@@ -520,7 +532,7 @@ function getHtmlFromMarkdown(content) {
       type = "image/jpeg";
       break;
     default:
-      type = DEFAULT_MIME_TEXT; // Or you can use the blob.type as fallback
+      type = DEFAULT_MIME_TEXT;
       break;
   }
   switch (type) {
@@ -538,21 +550,20 @@ function getHtmlFromMarkdown(content) {
       break;
   }
 
-  const wrapped = get_wrapped(encoded_payload, injector, type)
+  const wrapped = get_wrapped(uint8_array, injector, type, url)
   return [wrapped, type]
 }
 
-function rawHtmlResponse(html, type = "text/html;charset=UTF-8") {
+function response_with_blob(html, type = DEFAULT_MIME_HTML) {
   const init = {
-    headers: {
-      "content-type": type,
-    },
+    headers: {"content-type": type},
   }
   return new Response(html, init)
 }
+
 addEventListener('fetch', fetch_event => {
   // configure primary entrypoint
-  fetch_event.respondWith(do_work_with_fetch_event(fetch_event))
+  fetch_event.respondWith(HANDLER(fetch_event))
 })
 
 function hex(uint8arr) {
@@ -584,6 +595,7 @@ async function validate_token(token) {
 
 // https://github.com/TomasHubelbauer/workers-formdata/tree/17af6a85e8e3b74758fda4ac65a918f476febf10
 // BEGIN BLACK MAGIC UPLOAD PARSER
+// this is specifically required for form-uploading files to cloudflare webworkers
 function* parseMimeMultipart( /** @type {Uint8Array} */ uint8Array) {
   const textDecoder = new TextDecoder();
   /** @typedef {{ name: string; values: string[]; }} Header */
@@ -753,10 +765,10 @@ function* parseMimeMultipart( /** @type {Uint8Array} */ uint8Array) {
 // END BLACK MAGIC UPLOAD PARSER
 
 
-async function do_work_with_fetch_event(fetch_event) {
-  let ulid = monotonicFactory()
+// main entrypoint for all requests
+async function HANDLER(fetch_event) {
+  let ulid = factory()
   const now = Date.now()
-  // main entrypoint for all requests
   request = fetch_event.request
   let headers = [...request.headers]
   for (const key in request.cf) {
@@ -771,40 +783,42 @@ async function do_work_with_fetch_event(fetch_event) {
   header_obj['cf-connecting-slash24'] = header_obj['cf-connecting-ip'].split('.').slice(0, 3).join('.')
   try {
     let url = new URL(request.url)
-    if (url.pathname.startsWith("/post")) {
+    url.protocol = "https:"
+    // if upload is directed at /post or root (new)
+    if ((url.pathname == "/post") || (url.pathname == "/")) {
       if (request.method == "POST") {
-        let my_ulid = ulid(now)
+        let store_key = ulid(now)
         let delete_key = ulid(now)
+        let edit_key = ulid(now)
         const my_body = await request.arrayBuffer()
-        // = await request.arrayBuffer();
-                var parts = []
-                var blob
-                try {
-         parts = [...parseMimeMultipart(my_body)];
-                }
-                catch {
-                }
+        var parts = []
+        var blob
+        try {
+          parts = [...parseMimeMultipart(my_body)];
+        }
+        catch {
+        }
         if (parts.length === 0) { // not multipart - data binary, for example
-                 blob = my_body
+          blob = my_body
         } else if (parts.length > 1) {
           return new Response('One file at a time, please!');
         } else { // normal multipart upload, one file
           const [part] = parts;
           blob = my_body.slice(part.index, part.index + part.length);
         }
-                blob = await (new Blob([blob, my_ulid])).arrayBuffer() // postpend ULID to blob
+        // postpend edit key to blob - for salting hash
+        blob = await (new Blob([blob, edit_key])).arrayBuffer()
+
 // TODO
 // const overheadLength = nacl.box.publicKeyLength + nacl.box.overheadLength;
-  // var c = new Uint8Array(overheadLength + blob.length)
-  // var ek = nacl.box.keyPair();
-  // c.set(ek.publicKey);
-    
-  // var nonce = nonceGenerator(ek.publicKey, pk);
-  // var boxed = nacl.box(m, nonce, pk, ek.secretKey);
-  // c.set(boxed, ek.publicKey.length);
-        // use specified ttl if x-ttl header present, else use 31 days
-        // let x_ttl = header_obj.get("x-ttl")
-        
+// var c = new Uint8Array(overheadLength + blob.length)
+// var ek = nacl.box.keyPair();
+// c.set(ek.publicKey);
+// var nonce = nonceGenerator(ek.publicKey, pk);
+// var boxed = nacl.box(m, nonce, pk, ek.secretKey);
+// c.set(boxed, ek.publicKey.length);
+
+        // use specified ttl if x-ttl header present, else use 1 year
         let x_ttl = header_obj["x-ttl"]
         if (x_ttl == undefined) {
           x_ttl = 86400 * 30 * 12 // 1 year
@@ -817,62 +831,75 @@ async function do_work_with_fetch_event(fetch_event) {
         const body_sha256 = await crypto.subtle.digest("SHA-256", blob).then(function(hash) {
           return hex(hash)
         })
-        const store_key = `${my_ulid}_${body_sha256}`
+        //const store_key = `${store_key}_${body_sha256}`
         await NAMESPACE.put(store_key, blob, expiry)
         await NAMESPACE.put(delete_key, store_key, expiry)
-        return rawHtmlResponse(`GetPost saved ${blob.byteLength} bytes!
+        resp = `### GetPost stored ${blob.byteLength} bytes!
 
-share link: ${url.href}?key=${store_key}
+## share link: ${url.href}?key=${store_key}
 
-save link to delete: ${url.href.replace('/post', '/delete')}?key=${delete_key}
+### save link to delete: ${url.href.replace('/post', '/delete')}?key=${delete_key}
 
-expires in: 1 year`, DEFAULT_MIME_TEXT)
+## expires in: 1 year`
+        // if the content-type is urlencoded, then it's from a command line and we should return rawtext
+        if (header_obj["content-type"] == "application/x-www-form-urlencoded") { return response_with_blob(resp, DEFAULT_MIME_TEXT) }
+        // otherwise, convert and prettify the response, for browser operation
+        // UTF-16 string response -> UTF-8 bytes for the embed
+        var encoded_resp = new TextEncoder("utf-8").encode(resp);
+        var [body, type] = wrap_content(encoded_resp, url)
+        return response_with_blob(body, DEFAULT_MIME_HTML)
       }
       if (request.method == "GET") {
         const key = url.searchParams.get("key")
         const raw = url.searchParams.has("raw")
         if (!url.searchParams.has("key")) {
-          return rawHtmlResponse(upload)
+          return response_with_blob(upload)
         }
-        if (key.length == 91) {
+        if (key.length == 91 || key.length == 26) {
           let key_as_arrayBuffer = await NAMESPACE.get(key, "arrayBuffer")
           var resp;
+            // if key is actually there, remove the post-pended ULID from the body
           if (key_as_arrayBuffer != null) {
-            resp = key_as_arrayBuffer.slice(0,-26) // remove post-pended ULID
+            resp = key_as_arrayBuffer.slice(0,-26)
           }
-          else { resp = null}
-                    var [maybe_body, type] = getHtmlFromMarkdown(resp)
-          let resp_blob = raw ? resp : maybe_body
-                    let resp_type = raw ? type : "text/html;charset=UTF-8"
-          return rawHtmlResponse(resp_blob, resp_type)
+          else { resp = null }
+          if (raw) {
+              var [_, type] = wrap_content(resp, url)
+              return response_with_blob(resp, type)
+          }
+          else {
+              var [body, type] = wrap_content(resp, url)
+              return response_with_blob(body, DEFAULT_MIME_HTML)
+          }
         } else {
-          return rawHtmlResponse("Sorry, invalid key!")
+          return response_with_blob("Sorry, invalid key!")
         }
       }
     } else if (url.pathname == "/delete") {
       const delete_key = url.searchParams.get("key")
       if (delete_key == undefined) {
-        return rawHtmlResponse(`Provide a delete key as query parameter! ie) ${url.href}?key=KEY`)
+        return response_with_blob(`Provide a delete key as query parameter! ie) ${url.href}?key=KEY`)
       }
       const target_key = await NAMESPACE.get(delete_key)
       if (target_key == undefined) {
-        return rawHtmlResponse(`Sorry - Can't find this key!`)
+        return response_with_blob(`Sorry - Can't find this key!`)
       }
       const deleted_target = await NAMESPACE.delete(target_key)
       const deleted_delete = await NAMESPACE.delete(delete_key)
-      return rawHtmlResponse(`OK, sent command to delete ${target_key} using ${delete_key} - will take up to a few minutes to fully be purged.`)
+      return response_with_blob(`OK, sent command to delete ${target_key} using ${delete_key} - will take up to a few minutes to fully be purged.`)
     } else if (url.pathname == '/headers') {
       return new Response(JSON.stringify(header_obj) + "\n")
       } else if (url.pathname == '/echo') {
-      return new rawHtmlResponse(await request.arrayBuffer())
-    } else if (url.pathname == '/date') {
-      return new Response(JSON.stringify(Date.now()) + "\n")
+      return new response_with_blob(await request.arrayBuffer())
     } else if (url.pathname == '/raise_exception') {
       yolo
     } else if (url.pathname == "/getpost.css") {
-      return rawHtmlResponse(getpost_css, "text/css")
+      return response_with_blob(getpost_css, "text/css")
+    } else if (url.pathname == "/favicon.ico") {
+        // returning binary requires UTF-16 JS strings to be converted to ie) UTF-8 bytes
+      return response_with_blob(str2ab(atob(favicon)), "image/x-icon")
     } else {
-      return rawHtmlResponse(`You probably want ${url.host}/post`)
+      return response_with_blob(`You probably want ${url.host}/post, not ${url.pathname}!`)
     }
   } catch (err) {
     return new Response(JSON.stringify(header_obj) + '\n' + err.stack, {
