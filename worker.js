@@ -112,22 +112,22 @@ h1 {
     font-size: 48px;
 }
 h2 {
-	margin-top: 36px;
-/*	border-bottom: 1px solid #999; */
+  margin-top: 36px;
+/*  border-bottom: 1px solid #999; */
     font-size: 36px;
-	margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 h3 {
     font-size: 24px;
 }
 h4 {
-	line-height: 23px;
+  line-height: 23px;
     font-size: 21px;
 }
 h4 time{
-	font-size: 18px;
-	margin-left: 100px;
-	float:right;
+  font-size: 18px;
+  margin-left: 100px;
+  float:right;
 }
 h5 {
     font-size: 18px;
@@ -222,9 +222,9 @@ const upload = `<html><head>
 </div></body></html> 
 `
 function get_wrapped(encoded_payload, injector, type){
-	// pdf injector is redirect to -> &raw, so zero out payload
-	if (type == "application/pdf" ) { encoded_payload = ""}
-	const html = `
+  // pdf injector is redirect to -> &raw, so zero out payload
+  if (type == "application/pdf" ) { encoded_payload = ""}
+  const html = `
     <!doctype html>
 <html>
 <head>
@@ -331,22 +331,22 @@ return html
 }
 
 function ab2str(buf) {
-	return String.fromCharCode.apply(null, new Uint16Array(buf));
+  return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
 function str2ab(str) {
-	var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-	var bufView = new Uint16Array(buf);
-	for (var i = 0, strLen = str.length; i < strLen; i++) {
-		bufView[i] = str.charCodeAt(i);
-	}
-	return buf;
+  var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+  var bufView = new Uint16Array(buf);
+  for (var i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
 }
 
 function createError(message) {
-	const err = new Error(message);
-	err.source = "ulid";
-	return err;
+  const err = new Error(message);
+  err.source = "ulid";
+  return err;
 }
 
 const ENCODING_LEN = ENCODING.length;
@@ -355,204 +355,204 @@ const TIME_LEN = 10;
 const RANDOM_LEN = 16;
 
 function replaceCharAt(str, index, char) {
-	if (index > str.length - 1) {
-		return str;
-	}
-	return str.substr(0, index) + char + str.substr(index + 1);
+  if (index > str.length - 1) {
+    return str;
+  }
+  return str.substr(0, index) + char + str.substr(index + 1);
 }
 
 function incrementBase32(str) {
-	let done = undefined;
-	let index = str.length;
-	let char;
-	let charIndex;
-	const maxCharIndex = ENCODING_LEN - 1;
-	while (!done && index-- >= 0) {
-		char = str[index];
-		charIndex = ENCODING.indexOf(char);
-		if (charIndex === -1) {
-			throw createError("incorrectly encoded string");
-		}
-		if (charIndex === maxCharIndex) {
-			str = replaceCharAt(str, index, ENCODING[0]);
-			continue;
-		}
-		done = replaceCharAt(str, index, ENCODING[charIndex + 1]);
-	}
-	if (typeof done === "string") {
-		return done;
-	}
-	throw createError("cannot increment this string");
+  let done = undefined;
+  let index = str.length;
+  let char;
+  let charIndex;
+  const maxCharIndex = ENCODING_LEN - 1;
+  while (!done && index-- >= 0) {
+    char = str[index];
+    charIndex = ENCODING.indexOf(char);
+    if (charIndex === -1) {
+      throw createError("incorrectly encoded string");
+    }
+    if (charIndex === maxCharIndex) {
+      str = replaceCharAt(str, index, ENCODING[0]);
+      continue;
+    }
+    done = replaceCharAt(str, index, ENCODING[charIndex + 1]);
+  }
+  if (typeof done === "string") {
+    return done;
+  }
+  throw createError("cannot increment this string");
 }
 
 function randomChar(prng) {
-	let rand = Math.floor(prng() * ENCODING_LEN);
-	if (rand === ENCODING_LEN) {
-		rand = ENCODING_LEN - 1;
-	}
-	return ENCODING.charAt(rand);
+  let rand = Math.floor(prng() * ENCODING_LEN);
+  if (rand === ENCODING_LEN) {
+    rand = ENCODING_LEN - 1;
+  }
+  return ENCODING.charAt(rand);
 }
 
 function encodeTime(now, len) {
-	if (isNaN(now)) {
-		throw new Error(now + " must be a number");
-	}
-	if (now > TIME_MAX) {
-		throw createError("cannot encode time greater than " + TIME_MAX);
-	}
-	if (now < 0) {
-		throw createError("time must be positive");
-	}
-	if (Number.isInteger(now) === false) {
-		throw createError("time must be an integer");
-	}
-	let mod;
-	let str = "";
-	for (; len > 0; len--) {
-		mod = now % ENCODING_LEN;
-		str = ENCODING.charAt(mod) + str;
-		now = (now - mod) / ENCODING_LEN;
-	}
-	return str;
+  if (isNaN(now)) {
+    throw new Error(now + " must be a number");
+  }
+  if (now > TIME_MAX) {
+    throw createError("cannot encode time greater than " + TIME_MAX);
+  }
+  if (now < 0) {
+    throw createError("time must be positive");
+  }
+  if (Number.isInteger(now) === false) {
+    throw createError("time must be an integer");
+  }
+  let mod;
+  let str = "";
+  for (; len > 0; len--) {
+    mod = now % ENCODING_LEN;
+    str = ENCODING.charAt(mod) + str;
+    now = (now - mod) / ENCODING_LEN;
+  }
+  return str;
 }
 
 function encodeRandom(len, prng) {
-	let str = "";
-	for (; len > 0; len--) {
-		str = randomChar(prng) + str;
-	}
-	return str;
+  let str = "";
+  for (; len > 0; len--) {
+    str = randomChar(prng) + str;
+  }
+  return str;
 }
 
 function decodeTime(id) {
-	if (id.length !== TIME_LEN + RANDOM_LEN) {
-		throw createError("malformed ulid");
-	}
-	var time = id
-		.substr(0, TIME_LEN)
-		.split("")
-		.reverse()
-		.reduce((carry, char, index) => {
-			const encodingIndex = ENCODING.indexOf(char);
-			if (encodingIndex === -1) {
-				throw createError("invalid character found: " + char);
-			}
-			return (carry += encodingIndex * Math.pow(ENCODING_LEN, index));
-		}, 0);
-	if (time > TIME_MAX) {
-		throw createError("malformed ulid, timestamp too large");
-	}
-	return time;
+  if (id.length !== TIME_LEN + RANDOM_LEN) {
+    throw createError("malformed ulid");
+  }
+  var time = id
+    .substr(0, TIME_LEN)
+    .split("")
+    .reverse()
+    .reduce((carry, char, index) => {
+      const encodingIndex = ENCODING.indexOf(char);
+      if (encodingIndex === -1) {
+        throw createError("invalid character found: " + char);
+      }
+      return (carry += encodingIndex * Math.pow(ENCODING_LEN, index));
+    }, 0);
+  if (time > TIME_MAX) {
+    throw createError("malformed ulid, timestamp too large");
+  }
+  return time;
 }
 
 function detectPrng(allowInsecure = false, root) {
-	if (!root) {
-		root = typeof window !== "undefined" ? window : null;
-	}
-	const webCrypto = root &&
-		(root.crypto || root.msCrypto) ||
-		(typeof crypto !== "undefined" ? crypto : null);
-	if (webCrypto) {
-		return () => {
-			const buffer = new Uint8Array(1);
-			webCrypto.getRandomValues(buffer);
-			return buffer[0] / 0xff;
-		};
-	} else {
-		try {
-			const nodeCrypto = require("crypto");
-			return () => nodeCrypto.randomBytes(1).readUInt8() / 0xff;
-		} catch (e) {}
-	}
-	if (allowInsecure) {
-		try {
-			console.error("secure crypto unusable, falling back to insecure Math.random()!");
-		} catch (e) {}
-		return () => Math.random();
-	}
-	throw createError("secure crypto unusable, insecure Math.random not allowed");
+  if (!root) {
+    root = typeof window !== "undefined" ? window : null;
+  }
+  const webCrypto = root &&
+    (root.crypto || root.msCrypto) ||
+    (typeof crypto !== "undefined" ? crypto : null);
+  if (webCrypto) {
+    return () => {
+      const buffer = new Uint8Array(1);
+      webCrypto.getRandomValues(buffer);
+      return buffer[0] / 0xff;
+    };
+  } else {
+    try {
+      const nodeCrypto = require("crypto");
+      return () => nodeCrypto.randomBytes(1).readUInt8() / 0xff;
+    } catch (e) {}
+  }
+  if (allowInsecure) {
+    try {
+      console.error("secure crypto unusable, falling back to insecure Math.random()!");
+    } catch (e) {}
+    return () => Math.random();
+  }
+  throw createError("secure crypto unusable, insecure Math.random not allowed");
 }
 
 function monotonicFactory(currPrng) {
-	if (!currPrng) {
-		currPrng = detectPrng();
-	}
-	let lastTime = 0;
-	let lastRandom;
-	return function ulid(seedTime) {
-		if (isNaN(seedTime)) {
-			seedTime = Date.now();
-		}
-		if (seedTime <= lastTime) {
-			const incrementedRandom = (lastRandom = incrementBase32(lastRandom));
-			return encodeTime(lastTime, TIME_LEN) + incrementedRandom;
-		}
-		lastTime = seedTime;
-		const newRandom = (lastRandom = encodeRandom(RANDOM_LEN, currPrng));
-		return encodeTime(seedTime, TIME_LEN) + newRandom;
-	};
+  if (!currPrng) {
+    currPrng = detectPrng();
+  }
+  let lastTime = 0;
+  let lastRandom;
+  return function ulid(seedTime) {
+    if (isNaN(seedTime)) {
+      seedTime = Date.now();
+    }
+    if (seedTime <= lastTime) {
+      const incrementedRandom = (lastRandom = incrementBase32(lastRandom));
+      return encodeTime(lastTime, TIME_LEN) + incrementedRandom;
+    }
+    lastTime = seedTime;
+    const newRandom = (lastRandom = encodeRandom(RANDOM_LEN, currPrng));
+    return encodeTime(seedTime, TIME_LEN) + newRandom;
+  };
 }
 const ulid = monotonicFactory();
 
 function getHtmlFromMarkdown(content) {
-	if ( (content == null) || (content == undefined)) {
-		return "CONTENT NOT FOUND", DEFAULT_MIME_TEXT
-	}
+  if ( (content == null) || (content == undefined)) {
+    return "CONTENT NOT FOUND", DEFAULT_MIME_TEXT
+  }
     let uint8_array = new Uint8Array(content);
-	let encoded_payload = b32encode(uint8_array)
-	let header = hex(content.slice(0, 4))
-	var injector, type;
-	switch (header) {
+  let encoded_payload = b32encode(uint8_array)
+  let header = hex(content.slice(0, 4))
+  var injector, type;
+  switch (header) {
         case "25504446":
             type = "application/pdf";
             break;
-		case "89504e47":
-			type = "image/png";
-			break;
-		case "47494638":
-			type = "image/gif";
-			break;
-		case "ffd8ffe0":
-		case "ffd8ffe1":
-		case "ffd8ffe2":
-		case "ffd8ffe3":
-		case "ffd8ffe8":
-			type = "image/jpeg";
-			break;
-		default:
-			type = DEFAULT_MIME_TEXT; // Or you can use the blob.type as fallback
-			break;
-	}
-	switch (type) {
-		case "image/png":
-		case "image/gif":
-		case "image/jpeg":
-			injector = `document.getElementById('imgContent').src = "data:${type};base64," + b64encoded`;
-			break;
-		case "application/pdf":
-			injector = `window.location.assign(window.location.href+'&raw')`;
-			break;
-		case DEFAULT_MIME_TEXT:
-		default:
-			injector = `document.getElementById('content').innerHTML = marked(atob(b64encoded))`;
-			break;
-	}
+    case "89504e47":
+      type = "image/png";
+      break;
+    case "47494638":
+      type = "image/gif";
+      break;
+    case "ffd8ffe0":
+    case "ffd8ffe1":
+    case "ffd8ffe2":
+    case "ffd8ffe3":
+    case "ffd8ffe8":
+      type = "image/jpeg";
+      break;
+    default:
+      type = DEFAULT_MIME_TEXT; // Or you can use the blob.type as fallback
+      break;
+  }
+  switch (type) {
+    case "image/png":
+    case "image/gif":
+    case "image/jpeg":
+      injector = `document.getElementById('imgContent').src = "data:${type};base64," + b64encoded`;
+      break;
+    case "application/pdf":
+      injector = `window.location.assign(window.location.href+'&raw')`;
+      break;
+    case DEFAULT_MIME_TEXT:
+    default:
+      injector = `document.getElementById('content').innerHTML = marked(atob(b64encoded))`;
+      break;
+  }
 
-	const wrapped = get_wrapped(encoded_payload, injector, type)
-	return [wrapped, type]
+  const wrapped = get_wrapped(encoded_payload, injector, type)
+  return [wrapped, type]
 }
 
 function rawHtmlResponse(html, type = "text/html;charset=UTF-8") {
-	const init = {
-		headers: {
-			"content-type": type,
-		},
-	}
-	return new Response(html, init)
+  const init = {
+    headers: {
+      "content-type": type,
+    },
+  }
+  return new Response(html, init)
 }
 addEventListener('fetch', fetch_event => {
-	// configure primary entrypoint
-	fetch_event.respondWith(do_work_with_fetch_event(fetch_event))
+  // configure primary entrypoint
+  fetch_event.respondWith(do_work_with_fetch_event(fetch_event))
 })
 
 function hex(uint8arr) {
@@ -569,17 +569,17 @@ function hex(uint8arr) {
   return hexStr.toUpperCase();
 }
 async function validate_token(token) {
-	// basic hcaptcha response validator
-	let body = `secret=${hcaptcha_secret}&response=${token}`
-	let verify = await fetch("https://hcaptcha.com/siteverify", {
-		method: 'POST',
-		body: `secret=${hcaptcha_secret}&response=${token}`,
-		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-	})
-	const answer = await verify.json()
-	return answer
+  // basic hcaptcha response validator
+  let body = `secret=${hcaptcha_secret}&response=${token}`
+  let verify = await fetch("https://hcaptcha.com/siteverify", {
+    method: 'POST',
+    body: `secret=${hcaptcha_secret}&response=${token}`,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+  })
+  const answer = await verify.json()
+  return answer
 }
 
 // https://github.com/TomasHubelbauer/workers-formdata/tree/17af6a85e8e3b74758fda4ac65a918f476febf10
@@ -754,130 +754,130 @@ function* parseMimeMultipart( /** @type {Uint8Array} */ uint8Array) {
 
 
 async function do_work_with_fetch_event(fetch_event) {
-	let ulid = monotonicFactory()
-	const now = Date.now()
-	// main entrypoint for all requests
-	request = fetch_event.request
-	let headers = [...request.headers]
-	for (const key in request.cf) {
-		headers = headers.concat([
-			['cf-' + key, request.cf[key]]
-		])
-	}
-	let header_obj = {}
-	for (var header_index in headers) {
-		header_obj[headers[header_index][0].toLowerCase()] = headers[header_index][1]
-	}
-	header_obj['cf-connecting-slash24'] = header_obj['cf-connecting-ip'].split('.').slice(0, 3).join('.')
-	try {
-		let url = new URL(request.url)
-		if (url.pathname.startsWith("/post")) {
-			if (request.method == "POST") {
-				let my_ulid = ulid(now)
-				let delete_key = ulid(now)
-				const my_body = await request.arrayBuffer()
-				// = await request.arrayBuffer();
+  let ulid = monotonicFactory()
+  const now = Date.now()
+  // main entrypoint for all requests
+  request = fetch_event.request
+  let headers = [...request.headers]
+  for (const key in request.cf) {
+    headers = headers.concat([
+      ['cf-' + key, request.cf[key]]
+    ])
+  }
+  let header_obj = {}
+  for (var header_index in headers) {
+    header_obj[headers[header_index][0].toLowerCase()] = headers[header_index][1]
+  }
+  header_obj['cf-connecting-slash24'] = header_obj['cf-connecting-ip'].split('.').slice(0, 3).join('.')
+  try {
+    let url = new URL(request.url)
+    if (url.pathname.startsWith("/post")) {
+      if (request.method == "POST") {
+        let my_ulid = ulid(now)
+        let delete_key = ulid(now)
+        const my_body = await request.arrayBuffer()
+        // = await request.arrayBuffer();
                 var parts = []
                 var blob
                 try {
-				 parts = [...parseMimeMultipart(my_body)];
+         parts = [...parseMimeMultipart(my_body)];
                 }
                 catch {
                 }
-				if (parts.length === 0) { // not multipart - data binary, for example
+        if (parts.length === 0) { // not multipart - data binary, for example
                  blob = my_body
-				} else if (parts.length > 1) {
-					return new Response('One file at a time, please!');
-				} else { // normal multipart upload, one file
-					const [part] = parts;
-					blob = my_body.slice(part.index, part.index + part.length);
-				}
+        } else if (parts.length > 1) {
+          return new Response('One file at a time, please!');
+        } else { // normal multipart upload, one file
+          const [part] = parts;
+          blob = my_body.slice(part.index, part.index + part.length);
+        }
                 blob = await (new Blob([blob, my_ulid])).arrayBuffer() // postpend ULID to blob
 // TODO
 // const overheadLength = nacl.box.publicKeyLength + nacl.box.overheadLength;
-	// var c = new Uint8Array(overheadLength + blob.length)
-	// var ek = nacl.box.keyPair();
-	// c.set(ek.publicKey);
+  // var c = new Uint8Array(overheadLength + blob.length)
+  // var ek = nacl.box.keyPair();
+  // c.set(ek.publicKey);
     
-	// var nonce = nonceGenerator(ek.publicKey, pk);
-	// var boxed = nacl.box(m, nonce, pk, ek.secretKey);
-	// c.set(boxed, ek.publicKey.length);
-				// use specified ttl if x-ttl header present, else use 31 days
-				// let x_ttl = header_obj.get("x-ttl")
-				
-				let x_ttl = header_obj["x-ttl"]
-				if (x_ttl == undefined) {
-					x_ttl = 86400 * 30 * 12 // 1 year
-				} else {
-					x_ttl = parseInt(x_ttl, 10) // base 10 parse
-				}
-				const expiry = {
-					expirationTtl: x_ttl
-				} // seconds
-				const body_sha256 = await crypto.subtle.digest("SHA-256", blob).then(function(hash) {
-					return hex(hash)
-				})
-				const store_key = `${my_ulid}_${body_sha256}`
-				await NAMESPACE.put(store_key, blob, expiry)
-				await NAMESPACE.put(delete_key, store_key, expiry)
-				return rawHtmlResponse(`GetPost saved ${blob.byteLength} bytes!
+  // var nonce = nonceGenerator(ek.publicKey, pk);
+  // var boxed = nacl.box(m, nonce, pk, ek.secretKey);
+  // c.set(boxed, ek.publicKey.length);
+        // use specified ttl if x-ttl header present, else use 31 days
+        // let x_ttl = header_obj.get("x-ttl")
+        
+        let x_ttl = header_obj["x-ttl"]
+        if (x_ttl == undefined) {
+          x_ttl = 86400 * 30 * 12 // 1 year
+        } else {
+          x_ttl = parseInt(x_ttl, 10) // base 10 parse
+        }
+        const expiry = {
+          expirationTtl: x_ttl
+        } // seconds
+        const body_sha256 = await crypto.subtle.digest("SHA-256", blob).then(function(hash) {
+          return hex(hash)
+        })
+        const store_key = `${my_ulid}_${body_sha256}`
+        await NAMESPACE.put(store_key, blob, expiry)
+        await NAMESPACE.put(delete_key, store_key, expiry)
+        return rawHtmlResponse(`GetPost saved ${blob.byteLength} bytes!
 
 share link: ${url.href}?key=${store_key}
 
 save link to delete: ${url.href.replace('/post', '/delete')}?key=${delete_key}
 
 expires in: 1 year`, DEFAULT_MIME_TEXT)
-			}
-			if (request.method == "GET") {
-				const key = url.searchParams.get("key")
-				const raw = url.searchParams.has("raw")
-				if (!url.searchParams.has("key")) {
-					return rawHtmlResponse(upload)
-				}
-				if (key.length == 91) {
-					let key_as_arrayBuffer = await NAMESPACE.get(key, "arrayBuffer")
-					var resp;
-					if (key_as_arrayBuffer != null) {
-						resp = key_as_arrayBuffer.slice(0,-26) // remove post-pended ULID
-					}
-					else { resp = null}
+      }
+      if (request.method == "GET") {
+        const key = url.searchParams.get("key")
+        const raw = url.searchParams.has("raw")
+        if (!url.searchParams.has("key")) {
+          return rawHtmlResponse(upload)
+        }
+        if (key.length == 91) {
+          let key_as_arrayBuffer = await NAMESPACE.get(key, "arrayBuffer")
+          var resp;
+          if (key_as_arrayBuffer != null) {
+            resp = key_as_arrayBuffer.slice(0,-26) // remove post-pended ULID
+          }
+          else { resp = null}
                     var [maybe_body, type] = getHtmlFromMarkdown(resp)
-					let resp_blob = raw ? resp : maybe_body
+          let resp_blob = raw ? resp : maybe_body
                     let resp_type = raw ? type : "text/html;charset=UTF-8"
-					return rawHtmlResponse(resp_blob, resp_type)
-				} else {
-					return rawHtmlResponse("Sorry, invalid key!")
-				}
-			}
-		} else if (url.pathname == "/delete") {
-			const delete_key = url.searchParams.get("key")
-			if (delete_key == undefined) {
-				return rawHtmlResponse(`Provide a delete key as query parameter! ie) ${url.href}?key=KEY`)
-			}
-			const target_key = await NAMESPACE.get(delete_key)
-			if (target_key == undefined) {
-				return rawHtmlResponse(`Sorry - Can't find this key!`)
-			}
-			const deleted_target = await NAMESPACE.delete(target_key)
-			const deleted_delete = await NAMESPACE.delete(delete_key)
-			return rawHtmlResponse(`OK, sent command to delete ${target_key} using ${delete_key} - will take up to a few minutes to fully be purged.`)
-		} else if (url.pathname == '/headers') {
-			return new Response(JSON.stringify(header_obj) + "\n")
-    	} else if (url.pathname == '/echo') {
-			return new rawHtmlResponse(await request.arrayBuffer())
-		} else if (url.pathname == '/date') {
-			return new Response(JSON.stringify(Date.now()) + "\n")
-		} else if (url.pathname == '/raise_exception') {
-			yolo
-		} else if (url.pathname == "/getpost.css") {
-			return rawHtmlResponse(getpost_css, "text/css")
-		} else {
-			return rawHtmlResponse(`You probably want ${url.host}/post`)
-		}
-	} catch (err) {
-		return new Response(JSON.stringify(header_obj) + '\n' + err.stack, {
-			status: 500,
-			statusText: "caught exception in worker"
-		})
-	}
+          return rawHtmlResponse(resp_blob, resp_type)
+        } else {
+          return rawHtmlResponse("Sorry, invalid key!")
+        }
+      }
+    } else if (url.pathname == "/delete") {
+      const delete_key = url.searchParams.get("key")
+      if (delete_key == undefined) {
+        return rawHtmlResponse(`Provide a delete key as query parameter! ie) ${url.href}?key=KEY`)
+      }
+      const target_key = await NAMESPACE.get(delete_key)
+      if (target_key == undefined) {
+        return rawHtmlResponse(`Sorry - Can't find this key!`)
+      }
+      const deleted_target = await NAMESPACE.delete(target_key)
+      const deleted_delete = await NAMESPACE.delete(delete_key)
+      return rawHtmlResponse(`OK, sent command to delete ${target_key} using ${delete_key} - will take up to a few minutes to fully be purged.`)
+    } else if (url.pathname == '/headers') {
+      return new Response(JSON.stringify(header_obj) + "\n")
+      } else if (url.pathname == '/echo') {
+      return new rawHtmlResponse(await request.arrayBuffer())
+    } else if (url.pathname == '/date') {
+      return new Response(JSON.stringify(Date.now()) + "\n")
+    } else if (url.pathname == '/raise_exception') {
+      yolo
+    } else if (url.pathname == "/getpost.css") {
+      return rawHtmlResponse(getpost_css, "text/css")
+    } else {
+      return rawHtmlResponse(`You probably want ${url.host}/post`)
+    }
+  } catch (err) {
+    return new Response(JSON.stringify(header_obj) + '\n' + err.stack, {
+      status: 500,
+      statusText: "caught exception in worker"
+    })
+  }
 }
