@@ -1,0 +1,77 @@
+<html><head>
+<link rel="stylesheet" href="/getpost.css">
+<title>GetPost: Upload</title>
+<meta name="title" content="GetPost: File Upload">
+<meta name="description" content="Share the love!">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://getpost.bitsandpieces.io/"">
+<meta property="twitter:title" content="GetPost: Upload">
+<meta property="twitter:description" content="Libre linking for poems and memes. Share the love!">
+<meta property="twitter:image" content="https://getpost.bitsandpieces.io/post?key=01EYWFTY440WJFRAC6MX8VZ5YK&raw">
+</head>
+<body>
+<div id="wrap">
+    <div id="form">
+      <form method="post" enctype="multipart/form-data" action="/post" method="post" >
+        <input id="upfile" name="upfile" type="file">
+        <input value="Post" onclick="upload_file_directly()" type="button">
+      </form>
+    </div>
+  </div>
+  <table id="userinfo"><tr>
+<tr id="upfilename"></tr>
+<tr id="upfilesize"></tr>
+<tr id="upfiletype"></tr>
+<tr>
+<div id="notpacman" style="width: 30%; height: auto" >
+    ${notpacman_svg}
+</div>
+</tr>
+<tr><td id="message">omnomnom files.<br/></td></tr>
+</table>
+</div>
+<script>
+var file;
+var file_buffer;
+const dropArea = document.getElementById('notpacman');
+
+dropArea.addEventListener('dragover', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  // Style the drag-and-drop as a "copy file" operation.
+  event.dataTransfer.dropEffect = 'copy';
+});
+
+dropArea.addEventListener('drop', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  file = event.dataTransfer.files[0];
+    file.arrayBuffer().then((l,r)=>{file_buffer=l})
+    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
+    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
+    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
+});
+
+function upload_file_directly() {
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "/post", true);
+    oReq.onload = function (oEvent) {
+        console.log(oReq.response);
+        document.body.innerHTML = oReq.response
+    };
+    oReq.overrideMimeType(document.getElementById("upfiletype").innerHTML);
+    var blob = new Blob([file_buffer], {type: 'application/x-www-form-urlencoded'});
+    oReq.send(blob);
+};
+
+document.getElementById("upfile").addEventListener("change", function(event) {
+    file = event.target.files[0];
+    file.arrayBuffer().then((l,r)=>{file_buffer=l})
+    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
+    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
+    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
+}, false);
+</script>
+</body>
+</html>

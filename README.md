@@ -1,33 +1,54 @@
-## Welcome to the beta of GetPost!
+Welcome to GetPost v1.0!
+------
 
-### What? (is this?)
+## What? Is this?
 
-It's a spindly-legged spirit-child mashup of Imgur.com, gist.Github.com, http://sprunge.us, and darkhttpd.
+GetPost is an [imagebin](https://en.wikipedia.org/wiki/Image_hosting_service) and [pastebin](https://www.urbandictionary.com/define.php?term=Pastebin) - a tool for sharing text and photos. It is designed to be simple, secure, and understandable - as a starting place for more powerful (and more complicated) tools.
 
-It's stupid-simple simple file / note sharing, that's easy to use.
+You can try it out now at https://public.getpost.workers.dev, or by running the command:
 
-Instead of requiring users to setup a server of their own, GetPost allows HTML/JS-savvy individuals to setup and administer an extremely hackable (single-file!) service, hosted on Cloudflare, for free, for their communities.
+ > curl --data-binary @path/to/a/file.png https://public.getpost.workers.dev
 
- * Cloudflare has a record of punching Nazis.
- * Cloudflare already spends the electricity to run the servers this code runs on.
- * Cloudflare has a business model.
- * Cloudflare cares about security.
+You can deploy your own version for free - to servers worldwide! It has (almost) no "moving parts", very little surface area, (nearly) no chance of global downtime, and will (theoretically) never require manual security updates - rare claims for (useful) server/client software to make!
 
- TL;DR
+## Name
 
- * I like the Cloudflare. They do their best. They're US based, but this is mostly fine; so am I.
+The name is a portmanteau of the two most common [HTTP request "verbs"](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) - "GET" and "POST"; these are coincidentally the two basic functions of a pastebin or imagebin.
 
- On the other hand...
+## Features
 
- * Github backs ICE.
- * Imgur requires phone verification to use. And is probably creepy.
- * Github is literally Microsoft
- * http://sprunge.us can't be used by "your dad" and has a single-point-of-failure. And only does text.
- * Github backs ICE.
+ * Upload anything smaller than 10MB, share your original file, byte-for-byte (or as HTML). Delete when you want.
+ * "No Rights Reserved" - libre / open source, no ads, no tracking, no hosting costs, no profit model
+ * "native" support for markdown documents, PDFs, and common types of images.
+   * Server-side rendering of [markdown](https://daringfireball.net/projects/markdown/) via [marked](https://github.com/markedjs/marked).
+   * Extremely minimal CSS styling, and a [highly readable font](https://fonts.google.com/specimen/Ubuntu) for rendered text.
+   * No external resources - no third party dependencies, which means no third party tracking and no third parties breaking.
+   * Images sharable via embed in basic HTML with no loss of original quality.
+ * Usable from the command line, without Javascript, and optionally - over Tor.
+ * Plausible meta-tags for ergonomic sharing on [Twitter](https://business.twitter.com/en/blog/twitter-cards-101.html) and [Facebook](https://developers.facebook.com/tools/debug/).
+ * Helpful debug tooling, including exception traceback reporting, '/headers' - for returning headers, and '/echo' - returning message body.
 
-### GetPost
 
-GetPost is built on Cloudflare Workers, as a very thin layer on top of Cloudflare's KV store to allow easy sharing of arbitrary resources, such as memes, poems, love-notes, DLLs, PDFs, etc...
+## Why? (would one be interested)
+
+Hearkening back to... eras before Github Gists became ubiquitous, it was common for enterprising computer-y people to setup a small webserver, for hosting resumes, and sharing odds and ends with individuals online. This was nice, because it was trivial for to use (easy one-line SCP terminal commands, and your file is online!) - and relatively flexible, but - if maintaining webservers was easy, "SecDevOps" wouldn't be a real word.
+
+Running a server off your home computer is doable. I do it. But - if you're not careful, you expose your real-world location to third parties. Petty losers escalating online drama, can use your IP address, to knock your whole house offline. A blown breaker, or downed tree limb, can take your site offline. If you forget to apply important security updates, random viruses/bots/worms can take your site offline. Sure, renting a cheap server in a computer warehouse can alleviate some of these issues, but the cheapest computers are $/mo, and still require proper care and feeding.
+
+Depending upon your threat model, self-hosting services can be great. But for most people who use the internet, this is not an especially viable option.
+
+So, this service trades the ability to host on your own machine, for the ability to be deployed "for free" with either:
+
+ * a only few mouse clicks, and a copy and paste.
+ * running a simple script
+
+This project trades the ability to self-host, for the ability to move fast, and stand on the shoulders of a relatively benign corporate
+giant. I added no restrictions on reuse to the code I wrote, to encourage third party modification and reuse.
+
+
+## Design
+
+GetPost is built on [Cloudflare Workers](https://workers.dev), as a very thin layer on top of Cloudflare's KV store.
 
 From Cloudflare:
 
@@ -39,116 +60,223 @@ Neat.
 
 Perfect.
 
- > KV achieves this performance by being eventually-consistent. Changes may take up to 60 seconds to propagate. Workers KV isnâ€™t ideal for situations where you need support for atomic operations or where values must be read and written in a single transaction.
+ > KV achieves this performance by being eventually-consistent. Changes may take up to 60 seconds to propagate. Workers KV isn't ideal for situations where you need support for atomic operations or where values must be read and written in a single transaction.
 
 Fine.
 
 > All values are encrypted at rest with 256-bit AES-GCM, and only decrypted by the process executing your Worker scripts or responding to your API requests.
 
-Okay, I don't trust this too much, but that's cool.
+This seems reasonable.
 
 
+### Upload
 
-### Why? (do I care)
+File upload was originally implemented using normal [POST](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST) semantics for multipart forms,
+including files. This incurred a software complexity debt, due to current implementations of Cloudflare Workers, and required the inclusion of a hard-to-follow
+state machine to decode. Upon further consideration, the "complicated" semantics of adding boundaries to each "field" in the form were deprecated, in lieu of
+adding frontend javascript that mimics the behavior of curl's "--data-binary" raw POST upload. A few lines of Javascript wait on the "submit" button, and
+intercept button presses, instead sending the file's contents (without encoding or wrapping!) to the server. No multipart forms, no boundaries, no parsing.
 
-Hearkening back to... eras before Github Gists became ubiquitous, it was common for enterprising computer-y people to setup a small webserver, for sharing odds
-and ends with individuals online. This was nice, because it was trivial for to use (easy one-line SCP terminal commands, and your file is online!) - and
-relatively flexible, but - if maintaining webservers was easy, SecDevOps wouldn't be a real word.
+### Referencing
 
-Running a server off your home computer is doable. I do it. But - if you're not careful, you expose your real-world location to third parties. Petty losers,
-escalating online drama, can use your IP address, to knock your whole house offline. A blown breaker, or downed tree limb, can take your site offline. If you forget to
-apply important security updates, random viruses/bots/worms can take your site offline. Sure, renting a cheap server in a computer warehouse can alleviate some
-of these issues, but the cheapest computers are $/mo, and still require proper care and maitenance.
+Posts are referenced by by ULID - [Universally Unique Lexicographically Sortable Identifier](https://github.com/ulid/spec).
 
-Depending upon your threat model, self-hosting services can be great. But for most people who use the internet, this is not an especialy viable option.
+ULIDs are identifiers encoding a timestamp and random number in [Base 32](https://www.crockford.com/base32.html).
 
-So, this service trades the ability to host on your own machine, for the ability to be deployed "for free" with only few mouse clicks, and a copy and paste.
+ULIDs offer a number of convenient properties compared to the more common
+[UUID](https://www.ibm.com/support/knowledgecenter/en/SS6SG3_6.3.0/lr/ref/rlinfuuid4.html).
 
-This project trades the ability to self-host, for the ability to move fast, and stand on the shoulders of a relatively benign corporate
-giant. Theoretically - without having to trust them! You kinda have to trust your GetPost admin, but I'm working on that by adding transparent support for
-strong encryption, and ultimately, if you are worried about your admin snooping on you, run your own instance!
+ULIDs...
 
-It's really easy.
+ * ..are lexicographically sortable, where earlier objects sort to lower values.
+ * ..are Canonically encoded as a 26 character string, as opposed to the 36 character hex UUID, for shorter URLs.
+ * ..use [Crockford's base32](https://www.crockford.com/base32.html) - to avoid 0/o/O and 1/I/L confusion.
 
-### How?
+A second ULID is generated for use as a delete key.
 
-Sign up for a free cloudflare account and make a worker via https://workers.dev.
 
-Free tier covers 1GB of globally backed up / distributed storage, 1000 uploads/day, and 100k reads/day.
+## Trust and Security
 
-After that, it's $5/mo, for "lots of requests." After 100k clicks/day, hopefully you can find $5 and level up your game.
+Trust and security are subtle topics - and entire lectures could be given on the tradeoffs and optimisations made, even for a simple application like this!
 
-### Okay, so how do I actually use this??
+Fundementally, webbrowsers are poorly designed to enable secure computing contexts. A modern webbrowser is an extremely multi-tenacy computing environments, with design
+incentives that seldom align with user needs for confidentiality and integrity of data in rest and at motion.
 
-The basic version deployed on https://getpost.bitsandpieces.io offers relatively few pieces of functionality.
+By "modern sensibilities" - GetPost is pretty good, for a website!
 
-The primary point of use is:
+ * It optionally works over Tor, with javascript disabled.
+ * Data in motion is encrypted with TLS.
+    * Theoretically, this means your internet service provider, regional government, and local police cannot see what you upload, or how to access it.
+ * Data at rest is encrypted with AES-256.
+    * The data is encrypted by Cloudflare "automatically" - such that only the project administrator or need-to-know members of the cloudflare team have the potential to access it without the link.
+ * There are no advertisement scripts to deliver malware.
+ * There is one cookie, the `__cfduid` cookie - bound to the "project.workers.dev" domain. This cannot be used to track you elsewhere.
+ * There are no account passwords to lose or be reset by third parties.
+ * There is no dynamically loaded javascript.
+ * The service is hosted by an existing company with a strong brand and a strong revenue stream that would be jeopardised by malfeasance.
 
-#### https://getpost.bitsandpieces.io/post
+When I originally designed GetPost, I sketched an API design that - if properly implemented - would prevent site administrators from being able to view or
+edit user-uploaded content. If the user's webbrowser and the software backend support the same asymmetric encryption schemes, data could be stored in a manner
+only accessible with a just-in-time generated or user-provided private key. Such a scheme may be worth prototyping, but any naive implementation with design
+goals to protect non-domain-expert users from prying eyes risks conveying false hope in absence of appropriate discussion.
 
-This page loads an incredibly simple bit of html with a single file select. It uploads it, and saves it - returning the share URL, the delete URL (don't visit
-until you want to delete!) - and the expiry time (1 year).
+Let's say, as I had originally considered, one wished to use the phenomenal [TweetNaCl-js](https://github.com/dchest/tweetnacl-js) library, to further protect
+user content. It is [well documented](https://github.com/dchest/tweetnacl-js/blob/master/README.md), currently maintained, [audited by Cure53](https://cure53.de/tweetnacl.pdf), and works on robustly in any javascript runtime.
 
-```
-GetPost saved 3916 bytes!
-share link: http://getpost.bitsandpieces.io/post?key=01EYMS1DTBYAHCJNXBB8A4VP93_6a88a2dce9edc704a7d5fbf5369a1281ba24519216a55394e81419302664bb3a
+It offers both:
 
-save link to delete: http://getpost.bitsandpieces.io/delete?key=01EYMS1DTBYAHNICETRYLOLOL4
+ * Secret-key authenticated encryption (secretbox)
 
-expires in: 1 year
-```
+> Secret key encryption (also called symmetric key encryption) is analogous to a safe. You can store something secret through it and anyone who has the key
+> can open it and view the contents. SecretBox functions as just such a safe, and like any good safe any attempts to tamper with the contents are easily
+> detected.
 
-#### You can also use it from the command line!
+ * Public-key authenticated encryption (box)
 
-```
-SPX:~/getpost$ curl -X POST --data-binary @../arts/dying\ is\ fine.png 'https://getpost.bitsandpieces.io/post'
-GetPost saved 74532 bytes!
-share link: https://getpost.bitsandpieces.io/post?key=01EYMS5VKW07DKHKZ6W5JMVCMG_0dc5cfbf9e95fbd313d05c208b5d4077d7fb9a81b1091680210ba319b9fd8594
+> Imagine Alice wants something valuable shipped to her. Because it’s valuable, she wants to make sure it arrives securely (i.e. hasn’t been opened or
+> tampered with) and that it’s not a forgery (i.e. it’s actually from the sender she’s expecting it to be from and nobody’s pulling the old switcheroo).
 
-save link to delete: https://getpost.bitsandpieces.io/delete?key=0NOYPLZDONTWHYWOULDUJMVCMH
+> One way she can do this is by providing the sender (let’s call him Bob) with a high-security box of her choosing. She provides Bob with this box, and
+> something else: a padlock, but a padlock without a key. Alice is keeping that key all to herself. Bob can put items in the box then put the padlock onto
+> it. But once the padlock snaps shut, the box cannot be opened by anyone who doesn’t have Alice’s private key.
 
-expires in: 1 year
-```
+> Here’s the twist though: Bob also puts a padlock onto the box. This padlock uses a key Bob has published to the world, such that if you have one of Bob’s
+> keys, you know a box came from him because Bob’s keys will open Bob’s padlocks (let’s imagine a world where padlocks cannot be forged even if you know the
+> key). Bob then sends the box to Alice.
 
-#### Raw Mode
+> In order for Alice to open the box, she needs two keys: her private key that opens her own padlock, and Bob’s well-known key. If Bob’s key doesn’t open the
+> second padlock, then Alice knows that this is not the box she was expecting from Bob, it’s a forgery.
 
-By default the content is loaded in an HTML context, and dynamically decoded and inserted when the page is rendered. This is the magic that lets you upload markdown, but share
-HTML.
+> This bidirectional guarantee around identity is known as mutual authentication.
 
-If you see content errors, or want to embed GetPosted resources in other pages - add `&raw=true` (or even `&raw`) to the share URL. This will return a
-best-guess mimetype (byte inspection code needs work, but handles the common cases) and the raw bytes from the original upload.
+(both quotes from the excellent [PyNaCl Documentation](https://pynacl.readthedocs.io/en/latest/public/) )
 
-### What's the security model?
+These two primitives are formally known as `x25519-xsalsa20-poly1305` and `xsalsa20-poly1305`, widely implemented, almost understandable, and are generally agreed to be "good."
 
-So there are three-ish "things" you have to trust, until I land my asymmetric encryption work.
+But even with the technical capacity to encrypt one's memes and love letters in such a capacity that ["nobody"]() can read them, at least [until quantum computers grow up] - we're still left with open questions.
 
-Right now:
+Some "hard problems" in the technical space include...
 
- * Trust Cloudflare to not lie or cheat.
- * Trust your GetPost admin not to lie or cheat.
- * Trust the computer you use it on not to lie.
- * Trust that the javascript markdown renderer, the one external dep I dynamically link, won't be bought out, I guess.
+ * key generation
+   * frontend or backend? optional or required?
+ * key validation and exchange
+   * what if a user forgets their key? how is the key protected in transit?
+ * detecting and preventing backdoor insertion in the backend
+   * what if the API doesn't change at all, but every post from a hard-coded IP range is forwarded to fbi.gov?
+ * detecting and preventing backdoor insertion in the frontend
+   * what if the backend doesn't change at all, but your employer man-in-the-middles the TLS connection and replaces the frontend with a page that forwards all uploads to fbi.gov?
 
-I'm gonna fill this section out, just, later.
+Some harder problems in differently-technical spaces include...
 
-We already have TLS in motion, AES-256 at rest. It's pretty OK, but I have backend access and can hypothetically edit your posts. Fixing this "soon".
+ * how is content moderated?
+   * how are doxx removed?
+   * how are objectionable images removed?
+ * what are the consequences of giving anon an illusion of power?
+ * what recourse does an admin have to deplatform abusers?
+ * how can an admin incentivise appropriate stewardship of common-pool resources?
 
-### Where's the code? What next?
+These are problems I did not want to solve, to release this tool.
 
-Code is uh, nuts. IDK. It's basically OK. I hate javascript. I'm sorry.
+These are problems that have, can, and should be discussed and approached - but with care and patience.
 
-It's in a Gist here:
+All these trains of thought echo throughout computing in general - it's easy to pick on the JavaScript ecosystem, and the Chromium monoculture - but it's not like there are better solutions available with the same benefits! There's no free lunch!
 
-https://gist.github.com/infra-gf/afa898c66c63d98e95653c487d8cb2c4
+To excerpt liberally from ["Reflections on Trusting Trust"  - the Turing Award acceptance lecture given](https://users.ece.cmu.edu/~ganger/712.fall02/papers/p761-thompson.pdf) by [Ken Thompson](https://en.wikipedia.org/wiki/Ken_Thompson) - one of the forefathers of modern computing...
 
-I'm copypastaing it from the Cloudflare web editor periodically. SMH.
+ > The moral is obvious. You can’t trust code that you did
+ > not totally create yourself. (Especially code from com-
+ > panies that employ people like me.) No amount of
+ > source-level verification or scrutiny will protect you
+ > from using untrusted code. In demonstrating the possi-
+ > bility of this kind of attack, I picked on the C compiler.
 
-### What's next?
+ > I could have picked on any program-handling program
+ > such as an assembler, a loader, or even hardware mi-
+ > crocode. As the level of program gets lower, these bugs
+ > will be harder and harder to detect. A well-installed
+ > microcode bug will be almost impossible to detect.
 
- * asymmetric crypto with tweetnacl, kinda was the point
- * operational transform editing - editing / versioning with binary diffs
- * pay someone to rebuild this in typescript, and rebuild it in ultra-minimal async python3
- * find some way of coming up wtih $5/mo not-out-of-my-pocket, to run this indefinitely, at scale, for my friends
- * twitter bot lol? signal integration?
- * bug reports, feature requests, halp - plz someone help.
- * more docs IG
+Thompson wrote this in reference to his thought experiment, of a compiler designed to compile vulnerabilities into programs it builds - but the same sentiment extends here; it's awfully hard to prevent systemic defaults in the technology used to make a tool, from fundamentally trashing the assumptions underpinning the security model.
+
+
+So, rather than overextend in effort to provide a probably-false sense of security, the underlying model can be summarised.
+
+ * GetPost trades fancy encryption for simple behavior.
+ * [80 bits](https://security.stackexchange.com/questions/69374/is-an-80-bit-password-good-enough-for-all-practical-purposes) of entropy secures your posts from being accessed or deleted by third parties. This is better than most passwords.
+ * No technical features have been added which might serve to try and prevent a GetPost administrator from editing or deleting your content.
+ * Cloudflare has the capacity and occasional inclination to [view](https://web.archive.org/web/20210303133004/https://community.cloudflare.com/t/how-secure-is-my-javascript-workers-source-code-from-cloudflare-employees/176398/19) the source of customer applications in deployment. On the other hand, they "don’t look at data in KV."
+
+
+### Hacking
+
+It's free and easy to get started with your own GetPost instance, either on a domain you already own, or a free "*.workers.dev" subdomain.
+
+Because I trust you, I included a set of credentials allowing anyone to deploy to "https://staging.getpost.workers.dev" - as well as a set of end-to-end tests,
+and lots of source code comments. Also spared interested parties from painful toolchain misadventures!
+
+GetPost doesn't require the use of Cloudflare's Wrangler tool, the Node Package Manager, or a Rust buildchain. It does require `curl`, `python3`, and a
+Linux-like environment (termux or WSL should work.).
+
+To keep the main worker.js file managable, a simple well documented Python script - `autoinsert.py` - loads files from the `deps` folder into `worker.js` to make `worker.packed.js`.
+
+The `deploy.sh` script calls autoinsert.py to assemble the packed worker, loads credentials from a file in the local directory, and uploads the
+`worker.packed.js` file to Cloudflare.
+
+You can get started by cloning this repository, making a small edit to `worker.js` or one of the resources in `deps` - and running `./deploy.sh staging`.
+
+This loads the credentials from the `.staging` file, assembles your changes, and uploads the file.
+
+Your script will then start running on "https://staging.getpost.workers.dev" - and you can verify it works as expected by running `./test.sh staging`
+
+This loads other values from the `.staging` file, makes a series of requests to the the staging URL, and prints "SUCCESS" if the responses to the inputs are
+all correct.
+
+Be excellent to one another, and follow the instructions in SETUP.md to create your own account with your own credentials, if you intend to do any real work -
+after all, other folks may also avail themselves of the workers deploy API key!
+
+### Setup Your Own!
+
+To get started, go to https://workers.dev and sign up or sign in.
+
+A free account works fine, offering 100k reads a day, and 1000 uploads.
+
+<img src="https://getpost.bitsandpieces.io/post?key=01F02FEZJGGBJNFBN81EMBVN9G&raw" width="500px">
+
+Navigate to the KV section under Workers, and add a new KV instance, name it something descriptive, or "NAMESPACE".
+
+<img src="https://public.getpost.workers.dev/post?key=01F02FQH631DXZZP401AMRHAJH&raw" width="500px">
+
+Create a Worker.
+
+<img src="https://public.getpost.workers.dev/post?key=01F02F9AB4YPK80W46HPS56BF7&raw" width="500px">
+
+Deploy it, and then exit the editor, rename it to something useful..
+<img src="https://public.getpost.workers.dev/post?key=01F02J5TFS8NVJYG50DABWDJ9W&raw" width="500px">
+
+
+Edit the worker settings, adding a "KV Namespace Binding" - from the namespace you created, to the word "NAMESPACE"
+
+This is labeled as:
+
+
+> Bind an instance of a KV Namespace to access its data in a Worker.
+
+<img src="https://public.getpost.workers.dev/post?key=01F02G38TWT0J5DGYZ6EKBBPNJ&raw" width="500px">
+
+
+Create an API key to deploy your worker by opening https://dash.cloudflare.com/profile/api-tokens .
+
+The token needs to edit the worker scripts and edit the worker KV. Different permissions may be useful, depending upon your exact use case.
+
+<img src="https://getpost.bitsandpieces.io/post?key=01F02G74Y9XFP9XTY9B962V260&raw" width="500px">
+
+Copy the example `.staging` file to a new name, ie `.mydeploy`
+
+Edit it, removing the hashes (for now) and replacing values with:
+
+ * your account ID (from the URL, or the box on the side of the workers pane)
+ * your cloudflare API key
+ * your URL, ie `https://xray.yankee.workers.dev`
+
+You should then be able to run `./deploy.sh mydeploy` and `./test.sh mydeploy` - once you're happy with the state of your deploy via manual testing, you can
+add hashes to the appropriate spots in `.mydeploy` and verify future modifications don't break key functionality!

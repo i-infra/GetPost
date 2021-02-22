@@ -1,0 +1,41 @@
+<html>
+<head>
+<!-- Primary Meta Tags -->
+<title>GetPost: Content</title>
+<meta name="title" content="${TITLE}">
+<meta name="description" content="${description}">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:url" content="${url.toString()}">
+<meta property="og:title" content="${TITLE}">
+<meta property="og:description" content="${description}">
+<meta property="og:image" content="${imageUrl}">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="${url.toString()}">
+<meta property="twitter:title" content="${TITLE}">
+<meta property="twitter:description" content="${description}">
+<meta property="twitter:image" content="${imageUrl}">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+</head>
+
+<body>
+<link rel="stylesheet" href="getpost.css">
+  <div id="content">
+      <img id="imgContent" src="${imageUrl}"></img>
+  </div>
+  <div id="markdownContent">${contentAsHtmlFromMarked}</div>
+  <script>
+      var payloadType = "${type}";
+      </script>
+  <script>
+      var encodedPayload = "${encodedPayload}";
+      </script>
+  <script>
+  const ENCODING = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+  ${injectorScript};
+  </script>
+</body>
+</html>
