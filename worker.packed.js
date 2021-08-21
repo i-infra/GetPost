@@ -532,6 +532,9 @@ function generateHtmlBasedOnType (content, url = '') {
     case '49443304':
       type = 'audio/mp3'
       break
+    case '504b0304':
+      type = 'application/zip'
+      break
     case 'ffd8ffe0':
     case 'ffd8ffe1':
     case 'ffd8ffe2':
@@ -555,6 +558,7 @@ function generateHtmlBasedOnType (content, url = '') {
     case 'audio/mp3':
     case 'video/mp4':
     case 'application/pdf':
+    case 'application/zip':
     case 'application/octet-stream':
       injectorScript = 'window.location.assign(window.location.href+\'&raw\')'
       break
