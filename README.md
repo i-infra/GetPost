@@ -1,4 +1,4 @@
-Welcome to GetPost v1.0!
+Welcome to GetPost v1.1!
 ------
 
 ## What? Is this?
