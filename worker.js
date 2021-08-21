@@ -21,7 +21,6 @@ const favicon_gzip = 'H4sIAO9PM2AAA+2UMQrCQBBF36wbNZUBiUKa2MXOI9il9Rh6DMHKyjOls/
 
 const notpacman_svg = `AUTOINSERT_NOTPACMAN__SVG` // eslint-disable-line
 const getpost_css = `AUTOINSERT_GETPOST__CSS` // eslint-disable-line
-const ubuntu_woff_base64 = `AUTOINSERT_UBUNTU_WOFF2__BASE64` // eslint-disable-line
 const upload = `AUTOINSERT_UPLOAD__HTML` // eslint-disable-line
 
 const ENCODING_LEN = ENCODING.length
@@ -157,8 +156,6 @@ async function HANDLER (fetch_event) {
     } else if (url.pathname === '/favicon.ico') {
       // returning binary requires UTF-16 JS strings to be converted to ie) UTF-8 bytes
       return buildResponse(str2ab(atob(favicon_gzip)), 'image/x-icon', { 'Content-Encoding': 'gzip' })
-    } else if (url.pathname === '/ubuntu-4iCs6KVjbNBYlgoKcg72j00.woff2') {
-      return buildResponse(str2ab(atob(ubuntu_woff_base64)), 'application/font-woff')
     } else {
       return buildResponse(`You probably want ${url.host}/post, not ${url.pathname}!`, DEFAULT_MIME_HTML, {}, 404)
     }

@@ -4,6 +4,7 @@
 
 """
 
+from os import supports_effective_ids
 import sys, re, glob, os.path
 
 # this was setup for use with docopt-ng... but not much value
@@ -27,14 +28,55 @@ OUTPUT_JS = open(input_file_name, "rb").read()
 
 substitutions = {}
 
+base64_include_prefix = b"src: url("
+base64_data_url_prefix = b"data:font/woff2;base64,"
+base64_include_suffix = b") format('woff2')"
+
+def read_file_from_deps(file_name):
+    return open(f"./deps/{file_name.decode()}", "rb").read()
+
+def escape_pattern(input_pattern):
+    return input_pattern.replace(b"(", b"\(").replace(b")", b"\)")
+
 # find all AUTOINSERT tagged fragments using a regular expression matching string-interpolated javascript
 for fragment in re.findall(b"\`AUTOINSERT\w+\`", INPUT_JS):
     file_name = (
         fragment.strip(b"`").replace(b"__", b".").replace(b"AUTOINSERT_", b"").lower()
     )
-    print("loading:", file_name)
+    print("loading:", file_name.decode())
+    file_substitution = read_file_from_deps(file_name)
+    # include base64 strings from files in CSS
+    if re.match(b".+\.css", file_name):
+        """
+        css base64 include syntax:
+
+            src: url(data:font/woff2;base64,<BASE64STRING>) format('woff2');
+
+        where <BASE64STRING> is a valid base64 encoding of a .woff2 font file
+        """
+        for base64_include in re.findall(
+            escape_pattern(
+                base64_include_prefix
+                    + b".+"
+                    + base64_include_suffix
+            ),
+            file_substitution
+        ):
+            base64_file = (
+                base64_include
+                    .replace(base64_include_prefix, b"")
+                    .replace(base64_include_suffix, b"")
+            )
+            print("loading font:", base64_file.decode())
+            file_substitution = file_substitution.replace(
+                base64_include,
+                base64_include_prefix
+                    + base64_data_url_prefix
+                    + read_file_from_deps(base64_file)
+                    + base64_include_suffix
+            )
     substitutions[fragment] = (
-        b"`" + open(f"./deps/{file_name.decode()}", "rb").read() + b"`"
+        b"`" + file_substitution + b"`"
     )
 
 
