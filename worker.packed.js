@@ -512,6 +512,14 @@ function generateHtmlBasedOnType (content, url = '') {
   let injectorScript, type
   // matches the first four bytes of the uploaded file
   switch (header) {
+    // echo -n 'ftypmp42' | xxd
+    // 00000000: 6674 7970 6d70 3432                      ftypmp42
+    case '00000018':
+    case '0000001c':
+      if (hex(contentAsUint8Array.slice(4, 12)) == '667479706d703432') {
+        type = 'video/mp4'
+        break
+      }
     case '25504446':
       type = 'application/pdf'
       break
@@ -520,6 +528,9 @@ function generateHtmlBasedOnType (content, url = '') {
       break
     case '47494638':
       type = 'image/gif'
+      break
+    case '49443304':
+      type = 'audio/mp3'
       break
     case 'ffd8ffe0':
     case 'ffd8ffe1':
@@ -541,6 +552,8 @@ function generateHtmlBasedOnType (content, url = '') {
     case 'image/gif':
     case 'image/jpeg':
       break
+    case 'audio/mp3':
+    case 'video/mp4':
     case 'application/pdf':
     case 'application/octet-stream':
       injectorScript = 'window.location.assign(window.location.href+\'&raw\')'
