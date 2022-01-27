@@ -9,6 +9,13 @@ You can try it out now at https://public.getpost.workers.dev, or by running the 
 
  > curl --data-binary @path/to/a/file.png https://public.getpost.workers.dev
 
+Want to post from the command line, and copy the link in one fell swoop? Try this in fish! 
+
+"curl --data-binary @/dev/stdin https://public.getpost.workers.dev | grep share\ link | awk -F': ' '{print $2}' |xclip -sel clip -in;
+xclip -sel clip -out;" 
+
+Save the quoted thing as a file in local/bin. then set it up as a function. "function postf --argument f; cat $f | post; end"
+
 You can deploy your own version for free - to servers worldwide! It has (almost) no "moving parts", very little surface area, (nearly) no chance of global downtime, and will (theoretically) never require manual security updates - rare claims for (useful) server/client software to make!
 
 ## Name
