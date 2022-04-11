@@ -337,7 +337,7 @@ async function HANDLER (fetch_event) {
 ## expires at: ${expiryTime}`
         // file body is just bytes from the file, type and name are optionally passed as parameters
         if (requestHeadersAndFriends['content-type'] === 'application/x-www-form-urlencoded') {
-          if (requestHeadersAndFriends['user-agent'].startsWith('curl/')) {
+          if (requestHeadersAndFriends['user-agent'].startsWith('curl/') || requestHeadersAndFriends['user-agent'].toLowerCase().includes('python')) {
             return buildResponse(resp, DEFAULT_MIME_TEXT)
           } else {
             return buildResponse(marked(resp), DEFAULT_MIME_TEXT)
