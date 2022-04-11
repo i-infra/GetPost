@@ -1,0 +1,14 @@
+name = "worker-links"
+type = "javascript"
+
+# Change these!!
+account_id = "643b66ce8c3f2bb335477cd7af86996d"
+zone_id = "d8d69fe8f81670730da2684f4901cac8"
+kv_namespaces = [{ binding = "kv", id = "e5f035f299af4fc5a5ab182f3781a311"}]
+
+compatibility_flags = []
+compatibility_date = "2021-11-13"
+
+# Remove or comment out the route line if using workers_dev
+workers_dev = false
+route = "infra.moe/*"

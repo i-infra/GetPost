@@ -1,0 +1,7 @@
+{
+"private": true,
+"name": "GetPost",
+"version": "1.1.1",
+"description": "Simple Pastebin for Cloudflare Workers.",
+"main": "worker.packed.js"
+}
