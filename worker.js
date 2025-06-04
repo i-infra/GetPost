@@ -48,6 +48,12 @@ async function HANDLER (fetch_event) {
     requestHeadersAndFriends[headers[header_index][0].toLowerCase()] = headers[header_index][1]
   }
   const url = new URL(request.url)
+  
+  // Handle CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    return handleCorsPreflightRequest(url)
+  }
+  
   // wrap main handler in a try/catch exception logging & reporting block, for easy debug
   try {
     url.protocol = 'https:'
@@ -82,22 +88,22 @@ async function HANDLER (fetch_event) {
         // file body is just bytes from the file, type and name are optionally passed as parameters
         if (requestHeadersAndFriends['content-type'] === 'application/x-www-form-urlencoded') {
           if (requestHeadersAndFriends['user-agent'].startsWith('curl/') || requestHeadersAndFriends['user-agent'].toLowerCase().includes('python')) {
-            return buildResponse(resp, DEFAULT_MIME_TEXT)
+            return buildResponse(resp, DEFAULT_MIME_TEXT, {}, 200, url)
           } else {
-            return buildResponse(marked(resp), DEFAULT_MIME_TEXT)
+            return buildResponse(marked(resp), DEFAULT_MIME_TEXT, {}, 200, url)
           }
         }
         // normal multipart form uploads are actually surprisingly messy to parse, with their own syntax and semantics
         // instead of using normal form submit (multipart) - upload.html actually intercepts the buttonpush and calls a special handler to upload
         // NB: should never get here
-        return buildResponse('Sorry, MultiPart uploads are not supported.', DEFAULT_MIME_HTML, {}, 503)
+        return buildResponse('Sorry, MultiPart uploads are not supported.', DEFAULT_MIME_HTML, {}, 503, url)
       } else if (request.method === 'GET') {
         const del = url.searchParams.get('del')
         const key = url.searchParams.get('key')
         const raw = url.searchParams.has('raw')
         // if no key parameter provided, return the upload prompt so user can upload
         if (!url.searchParams.has('key')) {
-          return buildResponse(upload)
+          return buildResponse(upload, DEFAULT_MIME_HTML, {}, 200, url)
         }
         // ULID is len26
         if (key.length === 26 || key.length === 91) {
@@ -109,7 +115,7 @@ async function HANDLER (fetch_event) {
             if (contentFromKeyAsArrayBuffer !== null) {
               contentFromKeyAsArrayBuffer = contentFromKeyAsArrayBuffer.slice(0, -26)
             } else {
-              return buildResponse('Sorry, invalid key!', DEFAULT_MIME_TEXT, {}, 404)
+              return buildResponse('Sorry, invalid key!', DEFAULT_MIME_TEXT, {}, 404, url)
             }
           } else {
             // this second get should not be required... it appears getWithMetadata doesn't support returning arrayBuffers!?
@@ -119,22 +125,22 @@ async function HANDLER (fetch_event) {
           if (url.searchParams.has('del') && (del.length == 26)) {
             if (del === metadata.del) {
               const deleted_target_key = await NAMESPACE.delete(key)
-              return buildResponse(`OK, sent command to delete ${key} using ${del} - please wait 3min for full delete.`)
+              return buildResponse(`OK, sent command to delete ${key} using ${del} - please wait 3min for full delete.`, DEFAULT_MIME_TEXT, {}, 200, url)
             } else {
-              return buildResponse('Sorry, invalid del key!', DEFAULT_MIME_TEXT, {}, 404)
+              return buildResponse('Sorry, invalid del key!', DEFAULT_MIME_TEXT, {}, 404, url)
             }
           }
           const [generatedBodyHtml, type] = generateHtmlBasedOnType(contentFromKeyAsArrayBuffer, url)
           if (raw) {
             // if requested as raw, return the original resp object wtih detected MIME type
-            return buildResponse(contentFromKeyAsArrayBuffer, type)
+            return buildResponse(contentFromKeyAsArrayBuffer, type, {}, 200, url)
           }
           // otherwise, return the wrapped body with the text/html mimetype
           else {
-            return buildResponse(generatedBodyHtml, DEFAULT_MIME_HTML)
+            return buildResponse(generatedBodyHtml, DEFAULT_MIME_HTML, {}, 200, url)
           }
         } else {
-          return buildResponse('Sorry, invalid key!', DEFAULT_MIME_TEXT, {}, 404)
+          return buildResponse('Sorry, invalid key!', DEFAULT_MIME_TEXT, {}, 404, url)
         }
       }
     } else if (url.pathname === '/headers') {
@@ -143,21 +149,21 @@ async function HANDLER (fetch_event) {
       requestHeadersAndFriends.method = request.method
       // first 20 bytes (hex-encoded) of the request
       requestHeadersAndFriends.startBodyHex = hex((await request.arrayBuffer()).slice(-1, 20))
-      return new Response(JSON.stringify(requestHeadersAndFriends, null, 2) + '\n')
+      return buildResponse(JSON.stringify(requestHeadersAndFriends, null, 2) + '\n', 'application/json', {}, 200, url)
     } else if (url.pathname === '/echo') {
       // helpful debug endpoint - return the request body
-      return new buildResponse(await request.arrayBuffer())
+      return buildResponse(await request.arrayBuffer(), 'application/octet-stream', {}, 200, url)
     } else if (url.pathname === '/raise_exception') {
       // trigger an exception
       this_method_does_not_exist()
     } else if (url.pathname === '/getpost.css') {
       // return static css content
-      return buildResponse(getpost_css, 'text/css')
+      return buildResponse(getpost_css, 'text/css', {}, 200, url)
     } else if (url.pathname === '/favicon.ico') {
       // returning binary requires UTF-16 JS strings to be converted to ie) UTF-8 bytes
-      return buildResponse(str2ab(atob(favicon_gzip)), 'image/x-icon', { 'Content-Encoding': 'gzip' })
+      return buildResponse(str2ab(atob(favicon_gzip)), 'image/x-icon', { 'Content-Encoding': 'gzip' }, 200, url)
     } else {
-      return buildResponse(`You probably want ${url.host}/post, not ${url.pathname}!`, DEFAULT_MIME_HTML, {}, 404)
+      return buildResponse(`You probably want ${url.host}/post, not ${url.pathname}!`, DEFAULT_MIME_HTML, {}, 404, url)
     }
   } catch (err) {
     // very helpful traceback functionality, such that users can report errors
@@ -168,10 +174,37 @@ async function HANDLER (fetch_event) {
     requestHeadersAndFriends.startBodyHex = hex((await request.arrayBuffer()).slice(0, 20))
     return new Response(JSON.stringify(requestHeadersAndFriends, null, 2), {
       status: 500,
-      statusText: 'caught exception in worker'
+      statusText: 'caught exception in worker',
+      headers: addCorsHeaders({}, url)
     })
   }
 }
+
+// Handle CORS preflight requests
+function handleCorsPreflightRequest(url) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-TTL',
+    'Access-Control-Max-Age': '86400', // 24 hours
+  }
+  
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders
+  })
+}
+
+// Add CORS headers if cors=1 parameter is present
+function addCorsHeaders(headers, url) {
+  if (url && url.searchParams.has('cors')) {
+    headers['Access-Control-Allow-Origin'] = '*'
+    headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    headers['Access-Control-Allow-Headers'] = 'Content-Type, X-TTL'
+  }
+  return headers
+}
+
 // returns a single byte from the Cloudflare worker's (cryptographically secure) RNG
 function prng () {
   const buffer = new Uint8Array(8)
@@ -333,11 +366,16 @@ function generateHtmlBasedOnType (content, url = '') {
   return [contentAsWrappedHtml, type]
 }
 
-function buildResponse (blob, type = DEFAULT_MIME_HTML, headers = {}, statuscode = 200) {
+function buildResponse (blob, type = DEFAULT_MIME_HTML, headers = {}, statuscode = 200, url = null) {
   const headersObj = Object.assign(headers, { 'content-type': type })
+  
+  // Add CORS headers if cors parameter is present
+  if (url) {
+    addCorsHeaders(headersObj, url)
+  }
+  
   if (statuscode !== 200) {
-    return new Response(blob, { status: statuscode, statusText: blob })
+    return new Response(blob, { status: statuscode, statusText: blob, headers: headersObj })
   }
   return new Response(blob, { status: statuscode, headers: headersObj })
 }
-
