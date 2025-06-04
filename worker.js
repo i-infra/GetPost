@@ -54,6 +54,18 @@ async function HANDLER (fetch_event) {
     return handleCorsPreflightRequest(url)
   }
   
+  // Clone the request to avoid "body already used" errors in error handling
+  let requestBodyForDebug = null
+  try {
+    if (request.body) {
+      const clonedRequest = request.clone()
+      requestBodyForDebug = await clonedRequest.arrayBuffer()
+    }
+  } catch (e) {
+    // If cloning fails, we'll just not have debug info
+    requestBodyForDebug = new ArrayBuffer(0)
+  }
+  
   // wrap main handler in a try/catch exception logging & reporting block, for easy debug
   try {
     url.protocol = 'https:'
@@ -148,7 +160,11 @@ async function HANDLER (fetch_event) {
       requestHeadersAndFriends.url = url.toString()
       requestHeadersAndFriends.method = request.method
       // first 20 bytes (hex-encoded) of the request
-      requestHeadersAndFriends.startBodyHex = hex((await request.arrayBuffer()).slice(-1, 20))
+      if (requestBodyForDebug && requestBodyForDebug.byteLength > 0) {
+        requestHeadersAndFriends.startBodyHex = hex(requestBodyForDebug.slice(0, 20))
+      } else {
+        requestHeadersAndFriends.startBodyHex = ''
+      }
       return buildResponse(JSON.stringify(requestHeadersAndFriends, null, 2) + '\n', 'application/json', {}, 200, url)
     } else if (url.pathname === '/echo') {
       // helpful debug endpoint - return the request body
@@ -170,8 +186,12 @@ async function HANDLER (fetch_event) {
     requestHeadersAndFriends.url = url.toString()
     requestHeadersAndFriends.method = request.method
     requestHeadersAndFriends.traceback = err.stack.split('\n')
-    // include the first 20 bytes, as 40 hex characters
-    requestHeadersAndFriends.startBodyHex = hex((await request.arrayBuffer()).slice(0, 20))
+    // include the first 20 bytes, as 40 hex characters - use pre-cloned body
+    if (requestBodyForDebug && requestBodyForDebug.byteLength > 0) {
+      requestHeadersAndFriends.startBodyHex = hex(requestBodyForDebug.slice(0, 20))
+    } else {
+      requestHeadersAndFriends.startBodyHex = ''
+    }
     return new Response(JSON.stringify(requestHeadersAndFriends, null, 2), {
       status: 500,
       statusText: 'caught exception in worker',
