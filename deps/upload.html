@@ -5,10 +5,9 @@
 <meta name="description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://getpost.latest.workers.dev/">
+<meta property="twitter:url" content="${url.toString()}">
 <meta property="twitter:title" content="GetPost: Libre linking for poems and memes">
 <meta property="twitter:description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
-<meta property="twitter:image" content="https://getpost.latest.workers.dev/post?key=01EYWFTY440WJFRAC6MX8VZ5YK&raw">
 </head>
 <body>
 
@@ -46,25 +45,25 @@
 
 <h3>Command Line</h3>
 <pre><code># Basic upload
-curl --data-binary @myfile.txt https://your-domain.com
+curl --data-binary @myfile.txt ${url.toString()}
 
 # Upload from clipboard (macOS)
-pbpaste | curl --data-binary @- https://your-domain.com
+pbpaste | curl --data-binary @- ${url.toString()}
 
 # Custom expiration (1 hour)
-curl -H "X-TTL: 3600" --data-binary @file.txt https://your-domain.com</code></pre>
+curl -H "X-TTL: 3600" --data-binary @file.txt ${url.toString()}</code></pre>
 
 <h4>One-liner Script</h4>
 <p>Save this as <code>/usr/local/bin/pastebin</code> and make executable:</p>
 <pre><code>#!/bin/bash
-curl --data-binary @$\{1:--\} https://your-domain.com</code></pre>
+curl --data-binary @$\{1:--\} ${url.toString()}</code></pre>
 
 <p>Usage: <code>pastebin myfile.txt</code> or <code>echo "hello" | pastebin</code></p>
 
 <h2>Features</h2>
 
 <ul>
-<li><strong>📝 Text & Markdown</strong> - Automatic rendering with syntax highlighting</li>
+<li><strong>📝 Text & Markdown</strong> - Automatic rendering of markdown</li>
 <li><strong>🖼️ Images</strong> - PNG, JPEG, GIF with instant preview</li>
 <li><strong>📄 Documents</strong> - PDFs, videos, any file type up to 10MB</li>
 <li><strong>🔗 Shareable Links</strong> - Append <code>&raw</code> for direct file access</li>
@@ -96,7 +95,6 @@ curl --data-binary @$\{1:--\} https://your-domain.com</code></pre>
 <h3>Headers & Parameters</h3>
 <pre><code># Custom expiration
 X-TTL: 3600          # Seconds until expiry
-X-TTL: -1            # Permanent (requires X-Sudoers)
 
 # Parameters
 ?raw                 # Return original file
@@ -120,7 +118,7 @@ tail -f app.log | curl --data-binary @- $GETPOST_URL</code></pre>
 <p><strong>Privacy:</strong> No tracking, no ads, no accounts required</p>
 
 <blockquote>
-<p><strong>Open Source:</strong> No Rights Reserved. Fork it, hack it, improve it, deploy it everywhere.</p>
+<p><strong>Open Source:</strong> CC0; No Rights Reserved. Fork it, hack it, improve it, deploy it everywhere.</p>
 </blockquote>
 
 <p><a href="https://github.com/getpost-loves-you/getpost">📄 Source Code</a> | <a href="https://github.com/getpost-loves-you/getpost/blob/main/SETUP.md">🚀 Deploy Guide</a> | <a href="https://github.com/getpost-loves-you/getpost/issues">🐛 Report Issues</a></p>

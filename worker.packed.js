@@ -201,177 +201,6 @@ input[type=button] {
 input[type=button]:hover {
     background-color: #63f363;
 }`; // eslint-disable-line
-const upload = `<html><head>
-<link rel="stylesheet" href="/getpost.css">
-<title>GetPost: Upload</title>
-<meta name="title" content="GetPost: Libre linking for poems and memes">
-<meta name="description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://getpost.latest.workers.dev/">
-<meta property="twitter:title" content="GetPost: Libre linking for poems and memes">
-<meta property="twitter:description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
-<meta property="twitter:image" content="https://getpost.latest.workers.dev/post?key=01EYWFTY440WJFRAC6MX8VZ5YK&raw">
-</head>
-<body>
-
-<h1>GetPost</h1>
-<h2>Libre linking for poems and memes</h2>
-<h3>🚀 Run your own instance for free on any domain</h3>
-
-<p>Share text, images, and files up to 10MB. No accounts, no tracking, globally distributed.</p>
-
-<div id="wrap">
-    <div id="form">
-      <form method="post" enctype="multipart/form-data" action="/post" method="post">
-        <input id="upfile" name="upfile" type="file">
-        <input value="Post" onclick="upload_file_directly()" type="button">
-      </form>
-    </div>
-</div>
-
-<table id="userinfo">
-<tr id="upfilename"></tr>
-<tr id="upfilesize"></tr>
-<tr id="upfiletype"></tr>
-<tr>
-<div id="notpacman" style="width: 30%; height: auto">
-    ${notpacman_svg}
-</div>
-</tr>
-<tr><td id="message">Drag files here or click to upload<br/></td></tr>
-</table>
-
-<h2>Quick Start</h2>
-
-<h3>Web Upload</h3>
-<p>Drag and drop files above, or click to browse. Markdown files are rendered automatically.</p>
-
-<h3>Command Line</h3>
-<pre><code># Basic upload
-curl --data-binary @myfile.txt https://your-domain.com
-
-# Upload from clipboard (macOS)
-pbpaste | curl --data-binary @- https://your-domain.com
-
-# Custom expiration (1 hour)
-curl -H "X-TTL: 3600" --data-binary @file.txt https://your-domain.com</code></pre>
-
-<h4>One-liner Script</h4>
-<p>Save this as <code>/usr/local/bin/pastebin</code> and make executable:</p>
-<pre><code>#!/bin/bash
-curl --data-binary @$\{1:--\} https://your-domain.com</code></pre>
-
-<p>Usage: <code>pastebin myfile.txt</code> or <code>echo "hello" | pastebin</code></p>
-
-<h2>Features</h2>
-
-<ul>
-<li><strong>📝 Text & Markdown</strong> - Automatic rendering with syntax highlighting</li>
-<li><strong>🖼️ Images</strong> - PNG, JPEG, GIF with instant preview</li>
-<li><strong>📄 Documents</strong> - PDFs, videos, any file type up to 10MB</li>
-<li><strong>🔗 Shareable Links</strong> - Append <code>&raw</code> for direct file access</li>
-<li><strong>⏰ Auto-Expiry</strong> - Default 1 year, configurable with X-TTL header</li>
-<li><strong>🗑️ Delete Control</strong> - Every upload gets a unique delete key</li>
-</ul>
-
-<h2>Deploy Your Own</h2>
-
-<p>GetPost runs on <strong>Cloudflare Workers</strong> - zero servers, global distribution, generous free tier (100k reads, 1k uploads daily).</p>
-
-<ol>
-<li>Clone: <code>git clone https://github.com/getpost-loves-you/getpost</code></li>
-<li>Setup: Follow <code>SETUP.md</code> for one-click Cloudflare deployment</li>
-<li>Deploy: <code>./deploy.sh mydomain</code></li>
-<li>Hack: Modify CSS, add features, make it yours!</li>
-</ol>
-
-<h3>Why Self-Host?</h3>
-<ul>
-<li><strong>Free Forever</strong> - No hosting costs on Cloudflare's free tier</li>
-<li><strong>Your Domain</strong> - Custom branding and control</li>
-<li><strong>Zero Maintenance</strong> - No servers, no updates, no downtime</li>
-<li><strong>Privacy</strong> - Your data stays in your KV namespace</li>
-</ul>
-
-<h2>Advanced Usage</h2>
-
-<h3>Headers & Parameters</h3>
-<pre><code># Custom expiration
-X-TTL: 3600          # Seconds until expiry
-X-TTL: -1            # Permanent (requires X-Sudoers)
-
-# Parameters
-?raw                 # Return original file
-?cors=1              # Enable CORS headers</code></pre>
-
-<h3>Integration Examples</h3>
-<pre><code># GitHub Actions artifact sharing
-- run: ./deploy.sh | curl --data-binary @- $GETPOST_URL
-
-# Screenshot sharing (macOS)
-screencapture -c && pbpaste | curl --data-binary @- $GETPOST_URL
-
-# Log sharing
-tail -f app.log | curl --data-binary @- $GETPOST_URL</code></pre>
-
-<h2>Technical Details</h2>
-
-<p><strong>Architecture:</strong> Cloudflare Workers + KV storage, globally distributed edge computing</p>
-<p><strong>Security:</strong> ULID-based access control, separate delete tokens, no central database</p>
-<p><strong>Performance:</strong> Sub-100ms response times worldwide, automatic CDN caching</p>
-<p><strong>Privacy:</strong> No tracking, no ads, no accounts required</p>
-
-<blockquote>
-<p><strong>Open Source:</strong> No Rights Reserved. Fork it, hack it, improve it, deploy it everywhere.</p>
-</blockquote>
-
-<p><a href="https://github.com/getpost-loves-you/getpost">📄 Source Code</a> | <a href="https://github.com/getpost-loves-you/getpost/blob/main/SETUP.md">🚀 Deploy Guide</a> | <a href="https://github.com/getpost-loves-you/getpost/issues">🐛 Report Issues</a></p>
-
-<script>
-var file;
-var file_buffer;
-const dropArea = document.getElementById('notpacman');
-
-dropArea.addEventListener('dragover', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  event.dataTransfer.dropEffect = 'copy';
-});
-
-dropArea.addEventListener('drop', (event) => {
-  event.stopPropagation();
-  event.preventDefault();
-  file = event.dataTransfer.files[0];
-    file.arrayBuffer().then((l,r)=>{file_buffer=l})
-    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
-    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
-    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
-});
-
-function upload_file_directly() {
-    var oReq = new XMLHttpRequest();
-    oReq.open("POST", "/post", true);
-    oReq.onload = function (oEvent) {
-        console.log(oReq.response);
-        document.body.innerHTML = oReq.response
-    };
-    oReq.overrideMimeType(document.getElementById("upfiletype").innerHTML);
-    var blob = new Blob([file_buffer], {type: 'application/x-www-form-urlencoded'});
-    oReq.send(blob);
-};
-
-document.getElementById("upfile").addEventListener("change", function(event) {
-    file = event.target.files[0];
-    file.arrayBuffer().then((l,r)=>{file_buffer=l})
-    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
-    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
-    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
-}, false);
-</script>
-</body>
-</html>
-`; // eslint-disable-line
 
 const ENCODING_LEN = ENCODING.length;
 const TIME_LEN = 10;
@@ -442,13 +271,15 @@ async function HANDLER(fetch_event) {
           metadata: { edit: editKey, del: deleteKey, expiry: expiryTime},
         });
         // date string for expiry in IS08601; have to multiply TTL (in seconds) by 1000 for JS-friendly time
-        const resp = `## GetPost stored ${blob.byteLength} bytes!
+        const resp = `GetPost stored ${blob.byteLength} bytes!
 
-## share link: ${url.href}?key=${storeKey}&raw
+share link: ${url.href}?key=${storeKey}
 
-## save link to delete: ${url.href}?key=${storeKey}&del=${deleteKey}
+raw link: ${url.href}?key=${storeKey}&raw
 
-## expires at: ${expiryTime}`;
+save link to delete: ${url.href}?key=${storeKey}&del=${deleteKey}
+
+expires at: ${expiryTime}`;
         // file body is just bytes from the file, type and name are optionally passed as parameters
         if (
           requestHeadersAndFriends["content-type"] ===
@@ -481,6 +312,175 @@ async function HANDLER(fetch_event) {
         const raw = url.searchParams.has("raw");
         // if no key parameter provided, return the upload prompt so user can upload
         if (!url.searchParams.has("key")) {
+          const upload = `<html><head>
+<link rel="stylesheet" href="/getpost.css">
+<title>GetPost: Upload</title>
+<meta name="title" content="GetPost: Libre linking for poems and memes">
+<meta name="description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="${url.toString()}">
+<meta property="twitter:title" content="GetPost: Libre linking for poems and memes">
+<meta property="twitter:description" content="Run your own instance for free on any domain. No accounts, no tracking, globally distributed.">
+</head>
+<body>
+
+<h1>GetPost</h1>
+<h2>Libre linking for poems and memes</h2>
+<h3>🚀 Run your own instance for free on any domain</h3>
+
+<p>Share text, images, and files up to 10MB. No accounts, no tracking, globally distributed.</p>
+
+<div id="wrap">
+    <div id="form">
+      <form method="post" enctype="multipart/form-data" action="/post" method="post">
+        <input id="upfile" name="upfile" type="file">
+        <input value="Post" onclick="upload_file_directly()" type="button">
+      </form>
+    </div>
+</div>
+
+<table id="userinfo">
+<tr id="upfilename"></tr>
+<tr id="upfilesize"></tr>
+<tr id="upfiletype"></tr>
+<tr>
+<div id="notpacman" style="width: 30%; height: auto">
+    ${notpacman_svg}
+</div>
+</tr>
+<tr><td id="message">Drag files here or click to upload<br/></td></tr>
+</table>
+
+<h2>Quick Start</h2>
+
+<h3>Web Upload</h3>
+<p>Drag and drop files above, or click to browse. Markdown files are rendered automatically.</p>
+
+<h3>Command Line</h3>
+<pre><code># Basic upload
+curl --data-binary @myfile.txt ${url.toString()}
+
+# Upload from clipboard (macOS)
+pbpaste | curl --data-binary @- ${url.toString()}
+
+# Custom expiration (1 hour)
+curl -H "X-TTL: 3600" --data-binary @file.txt ${url.toString()}</code></pre>
+
+<h4>One-liner Script</h4>
+<p>Save this as <code>/usr/local/bin/pastebin</code> and make executable:</p>
+<pre><code>#!/bin/bash
+curl --data-binary @$\{1:--\} ${url.toString()}</code></pre>
+
+<p>Usage: <code>pastebin myfile.txt</code> or <code>echo "hello" | pastebin</code></p>
+
+<h2>Features</h2>
+
+<ul>
+<li><strong>📝 Text & Markdown</strong> - Automatic rendering of markdown</li>
+<li><strong>🖼️ Images</strong> - PNG, JPEG, GIF with instant preview</li>
+<li><strong>📄 Documents</strong> - PDFs, videos, any file type up to 10MB</li>
+<li><strong>🔗 Shareable Links</strong> - Append <code>&raw</code> for direct file access</li>
+<li><strong>⏰ Auto-Expiry</strong> - Default 1 year, configurable with X-TTL header</li>
+<li><strong>🗑️ Delete Control</strong> - Every upload gets a unique delete key</li>
+</ul>
+
+<h2>Deploy Your Own</h2>
+
+<p>GetPost runs on <strong>Cloudflare Workers</strong> - zero servers, global distribution, generous free tier (100k reads, 1k uploads daily).</p>
+
+<ol>
+<li>Clone: <code>git clone https://github.com/getpost-loves-you/getpost</code></li>
+<li>Setup: Follow <code>SETUP.md</code> for one-click Cloudflare deployment</li>
+<li>Deploy: <code>./deploy.sh mydomain</code></li>
+<li>Hack: Modify CSS, add features, make it yours!</li>
+</ol>
+
+<h3>Why Self-Host?</h3>
+<ul>
+<li><strong>Free Forever</strong> - No hosting costs on Cloudflare's free tier</li>
+<li><strong>Your Domain</strong> - Custom branding and control</li>
+<li><strong>Zero Maintenance</strong> - No servers, no updates, no downtime</li>
+<li><strong>Privacy</strong> - Your data stays in your KV namespace</li>
+</ul>
+
+<h2>Advanced Usage</h2>
+
+<h3>Headers & Parameters</h3>
+<pre><code># Custom expiration
+X-TTL: 3600          # Seconds until expiry
+
+# Parameters
+?raw                 # Return original file
+?cors=1              # Enable CORS headers</code></pre>
+
+<h3>Integration Examples</h3>
+<pre><code># GitHub Actions artifact sharing
+- run: ./deploy.sh | curl --data-binary @- $GETPOST_URL
+
+# Screenshot sharing (macOS)
+screencapture -c && pbpaste | curl --data-binary @- $GETPOST_URL
+
+# Log sharing
+tail -f app.log | curl --data-binary @- $GETPOST_URL</code></pre>
+
+<h2>Technical Details</h2>
+
+<p><strong>Architecture:</strong> Cloudflare Workers + KV storage, globally distributed edge computing</p>
+<p><strong>Security:</strong> ULID-based access control, separate delete tokens, no central database</p>
+<p><strong>Performance:</strong> Sub-100ms response times worldwide, automatic CDN caching</p>
+<p><strong>Privacy:</strong> No tracking, no ads, no accounts required</p>
+
+<blockquote>
+<p><strong>Open Source:</strong> CC0; No Rights Reserved. Fork it, hack it, improve it, deploy it everywhere.</p>
+</blockquote>
+
+<p><a href="https://github.com/getpost-loves-you/getpost">📄 Source Code</a> | <a href="https://github.com/getpost-loves-you/getpost/blob/main/SETUP.md">🚀 Deploy Guide</a> | <a href="https://github.com/getpost-loves-you/getpost/issues">🐛 Report Issues</a></p>
+
+<script>
+var file;
+var file_buffer;
+const dropArea = document.getElementById('notpacman');
+
+dropArea.addEventListener('dragover', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'copy';
+});
+
+dropArea.addEventListener('drop', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  file = event.dataTransfer.files[0];
+    file.arrayBuffer().then((l,r)=>{file_buffer=l})
+    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
+    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
+    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
+});
+
+function upload_file_directly() {
+    var oReq = new XMLHttpRequest();
+    oReq.open("POST", "/post", true);
+    oReq.onload = function (oEvent) {
+        console.log(oReq.response);
+        document.body.innerHTML = oReq.response
+    };
+    oReq.overrideMimeType(document.getElementById("upfiletype").innerHTML);
+    var blob = new Blob([file_buffer], {type: 'application/x-www-form-urlencoded'});
+    oReq.send(blob);
+};
+
+document.getElementById("upfile").addEventListener("change", function(event) {
+    file = event.target.files[0];
+    file.arrayBuffer().then((l,r)=>{file_buffer=l})
+    document.getElementById("upfilesize").innerHTML = "Size: " + file.size + " bytes";
+    document.getElementById("upfiletype").innerHTML = "Type: " + file.type;
+    document.getElementById("upfilename").innerHTML = "Filename: " + file.name;
+}, false);
+</script>
+</body>
+</html>
+`; // eslint-disable-line
           return buildResponse(upload, DEFAULT_MIME_HTML, {}, 200, url);
         }
         // ULID is len26

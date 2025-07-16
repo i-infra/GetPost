@@ -22,7 +22,6 @@ const favicon_gzip =
 
 const notpacman_svg = `AUTOINSERT_NOTPACMAN__SVG`; // eslint-disable-line
 const getpost_css = `AUTOINSERT_GETPOST__CSS`; // eslint-disable-line
-const upload = `AUTOINSERT_UPLOAD__HTML`; // eslint-disable-line
 
 const ENCODING_LEN = ENCODING.length;
 const TIME_LEN = 10;
@@ -93,13 +92,15 @@ async function HANDLER(fetch_event) {
           metadata: { edit: editKey, del: deleteKey, expiry: expiryTime},
         });
         // date string for expiry in IS08601; have to multiply TTL (in seconds) by 1000 for JS-friendly time
-        const resp = `## GetPost stored ${blob.byteLength} bytes!
+        const resp = `GetPost stored ${blob.byteLength} bytes!
 
-## share link: ${url.href}?key=${storeKey}&raw
+share link: ${url.href}?key=${storeKey}
 
-## save link to delete: ${url.href}?key=${storeKey}&del=${deleteKey}
+raw link: ${url.href}?key=${storeKey}&raw
 
-## expires at: ${expiryTime}`;
+save link to delete: ${url.href}?key=${storeKey}&del=${deleteKey}
+
+expires at: ${expiryTime}`;
         // file body is just bytes from the file, type and name are optionally passed as parameters
         if (
           requestHeadersAndFriends["content-type"] ===
@@ -132,6 +133,7 @@ async function HANDLER(fetch_event) {
         const raw = url.searchParams.has("raw");
         // if no key parameter provided, return the upload prompt so user can upload
         if (!url.searchParams.has("key")) {
+          const upload = `AUTOINSERT_UPLOAD__HTML`; // eslint-disable-line
           return buildResponse(upload, DEFAULT_MIME_HTML, {}, 200, url);
         }
         // ULID is len26
