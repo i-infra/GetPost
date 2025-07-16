@@ -1,4 +1,4 @@
-Welcome to GetPost v1.1!
+Welcome to GetPost v1.2!
 ------
 
 ## What? Is this?
@@ -9,10 +9,10 @@ You can try it out now at https://public.getpost.workers.dev, or by running the 
 
  > curl --data-binary @path/to/a/file.png https://public.getpost.workers.dev
 
-Want to post from the command line, and copy the link in one fell swoop? Try this in fish! 
+Want to post from the command line, and copy the link in one fell swoop? Try this in fish!
 
 "curl --data-binary @/dev/stdin https://public.getpost.workers.dev | grep share\ link | awk -F': ' '{print $2}' |xclip -sel clip -in;
-xclip -sel clip -out;" 
+xclip -sel clip -out;"
 
 Save the quoted thing as a file in local/bin. then set it up as a function. "function postf --argument f; cat $f | post; end"
 
@@ -104,7 +104,7 @@ A second ULID is generated for use as a delete key.
 
 ## Trust and Security
 
-Trust and security are subtle topics - and entire lectures could be given on the tradeoffs and optimisations made, even for a simple application like this!
+Trust and security are subtle topics - and entire lectures have be given on the tradeoffs and optimisations made, even for a simple application like this!
 
 Fundementally, webbrowsers are poorly designed to enable secure computing contexts. A modern webbrowser is an extremely multi-tenacy computing environments, with design
 incentives that seldom align with user needs for confidentiality and integrity of data in rest and at motion.
@@ -218,7 +218,7 @@ So, rather than overextend in effort to provide a probably-false sense of securi
 
 It's free and easy to get started with your own GetPost instance, either on a domain you already own, or a free "*.workers.dev" subdomain.
 
-Because I trust you, I included a set of credentials allowing anyone to deploy to "https://staging.getpost.workers.dev" - as well as a set of end-to-end tests,
+Because I love you, I included a set of credentials allowing anyone to deploy to "https://staging.getpost.workers.dev" - as well as a set of end-to-end tests,
 and lots of source code comments. Also spared interested parties from painful toolchain misadventures!
 
 GetPost doesn't require the use of Cloudflare's Wrangler tool, the Node Package Manager, or a Rust buildchain. It does require `curl`, `python3`, and a
@@ -235,55 +235,8 @@ This loads the credentials from the `.staging` file, assembles your changes, and
 
 Your script will then start running on "https://staging.getpost.workers.dev" - and you can verify it works as expected by running `./test.sh staging`
 
-This loads other values from the `.staging` file, makes a series of requests to the the staging URL, and prints "SUCCESS" if the responses to the inputs are
-all correct.
+This loads other values from the `.staging` file, makes a series of requests to the the staging URL, and prints "ALL TESTS PASSED" if the responses to the inputs are
+all as expected.
 
 Be excellent to one another, and follow the instructions in SETUP.md to create your own account with your own credentials, if you intend to do any real work -
-after all, other folks may also avail themselves of the workers deploy API key!
-
-### Setup Your Own!
-
-To get started, go to https://workers.dev and sign up or sign in.
-
-A free account works fine, offering 100k reads a day, and 1000 uploads.
-
-<img src="https://getpost.bitsandpieces.io/post?key=01F02FEZJGGBJNFBN81EMBVN9G&raw" width="500px">
-
-Navigate to the KV section under Workers, and add a new KV instance, name it something descriptive, or "NAMESPACE".
-
-<img src="https://public.getpost.workers.dev/post?key=01F02FQH631DXZZP401AMRHAJH&raw" width="500px">
-
-Create a Worker.
-
-<img src="https://public.getpost.workers.dev/post?key=01F02F9AB4YPK80W46HPS56BF7&raw" width="500px">
-
-Deploy it, and then exit the editor, rename it to something useful..
-<img src="https://public.getpost.workers.dev/post?key=01F02J5TFS8NVJYG50DABWDJ9W&raw" width="500px">
-
-
-Edit the worker settings, adding a "KV Namespace Binding" - from the namespace you created, to the word "NAMESPACE"
-
-This is labeled as:
-
-
-> Bind an instance of a KV Namespace to access its data in a Worker.
-
-<img src="https://public.getpost.workers.dev/post?key=01F02G38TWT0J5DGYZ6EKBBPNJ&raw" width="500px">
-
-
-Create an API key to deploy your worker by opening https://dash.cloudflare.com/profile/api-tokens .
-
-The token needs to edit the worker scripts and edit the worker KV. Different permissions may be useful, depending upon your exact use case.
-
-<img src="https://getpost.bitsandpieces.io/post?key=01F02G74Y9XFP9XTY9B962V260&raw" width="500px">
-
-Copy the example `.staging` file to a new name, ie `.mydeploy`
-
-Edit it, removing the hashes (for now) and replacing values with:
-
- * your account ID (from the URL, or the box on the side of the workers pane)
- * your cloudflare API key
- * your URL, ie `https://xray.yankee.workers.dev`
-
-You should then be able to run `./deploy.sh mydeploy` and `./test.sh mydeploy` - once you're happy with the state of your deploy via manual testing, you can
-add hashes to the appropriate spots in `.mydeploy` and verify future modifications don't break key functionality!
+after all, other folks may also avail themselves of the staging deploy API key!

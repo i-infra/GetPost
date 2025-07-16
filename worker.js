@@ -87,12 +87,12 @@ async function HANDLER(fetch_event) {
           // parse base-10 number from header string
           xTtlSeconds = parseInt(xTtlSeconds, 10);
         }
+        const expiryTime = new Date(xTtlSeconds * 1000 + now).toISOString();
         await NAMESPACE.put(storeKey, blob, {
           expirationTtl: xTtlSeconds,
-          metadata: { edit: editKey, del: deleteKey },
+          metadata: { edit: editKey, del: deleteKey, expiry: expiryTime},
         });
         // date string for expiry in IS08601; have to multiply TTL (in seconds) by 1000 for JS-friendly time
-        const expiryTime = new Date(xTtlSeconds * 1000 + now).toISOString();
         const resp = `## GetPost stored ${blob.byteLength} bytes!
 
 ## share link: ${url.href}?key=${storeKey}&raw
@@ -190,6 +190,7 @@ async function HANDLER(fetch_event) {
           const [generatedBodyHtml, type] = generateHtmlBasedOnType(
             contentFromKeyAsArrayBuffer,
             url,
+            metadata
           );
           if (raw) {
             // if requested as raw, return the original resp object wtih detected MIME type
@@ -391,7 +392,16 @@ function hex(uint8arr_or_arraybuffer) {
 }
 
 // content (and optional url) to wrapper html and detected type
-function generateHtmlBasedOnType(content, url = "") {
+function generateHtmlBasedOnType(content, url = "", metadata = null) {
+   let expiryTime = "Unknown";
+   if (metadata) {
+      if (metadata.permanent) {
+        expiryTime = "Never (permanent)";
+      }
+       else if (metadata.expiry) {
+          expiryTime = metadata.expiry.split('T')[0];
+      }
+   }
   if (content === null || content === undefined) {
     return ["CONTENT NOT FOUND", DEFAULT_MIME_TEXT];
   }
@@ -487,7 +497,7 @@ function buildResponse(
   type = DEFAULT_MIME_HTML,
   headers = {},
   statuscode = 200,
-  url = null,
+  url = null
 ) {
   const headersObj = Object.assign(headers, { "content-type": type });
 

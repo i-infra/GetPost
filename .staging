@@ -1,7 +1,9 @@
-rendered_good=7cdcc1232a5111900b219d9324bde2f1ce81cca92e06576d8764771792150641 
-upload_good=57d931186d1cb536b046d0af67d71ddd8a39fccc4b94922c303b39f13b70c327 
-image_good=9c71673b840e5e3ad80b42cd5d33239a70d9fe86338bbcd5455e081fa811c436
 DEPLOY_URL="https://staging.getpost.workers.dev"
 CF_ACCOUNT_ID=d74b1ba4edf369b76c26da33d47da32b
 CF_API_TOKEN=de6lFVJ0xO0CjcGuNwDbYrS7j5PPT5zdKpAVNHqF
 SCRIPT_NAME=staging
+
+# Generated test hashes Tue Jul 15 23:42:46 EDT 2025
+rendered_good="d30e26c8be5e5500a6365c0090827298e3dc4c00011e8e9a92ff76d3e978dc9f"
+upload_good="3a007ee64f6369a49cb390efbdeccb2a4651c93e0a9afa1f1631c039c4518d45"
+image_good="65b66a5c60254595126f39573930363ab899d20151a9baecb92777b4a67d3bd8"
