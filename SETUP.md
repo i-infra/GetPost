@@ -27,7 +27,7 @@ Your changes will appear at https://staging.getpost.workers.dev - perfect for te
 1. **Sign up** at [workers.dev](https://workers.dev) (free tier gives you 100k reads/day, 1k uploads/day)
 2. **Create KV Namespace:**
    - Go to Workers → KV
-   - Click "Create Namespace"  
+   - Click "Create Namespace"
    - Name it something descriptive (or just "NAMESPACE")
    - Note the namespace ID
 
@@ -41,7 +41,7 @@ Your changes will appear at https://staging.getpost.workers.dev - perfect for te
 4. **Configure KV Binding:**
    - In your worker, go to Settings → Variables
    - Under "KV Namespace Bindings", click "Add binding"
-   - Variable name: `NAMESPACE` 
+   - Variable name: `NAMESPACE`
    - KV namespace: Select the one you created
    - Click "Save"
 
@@ -80,7 +80,7 @@ DEPLOY_URL="https://your-worker-name.your-subdomain.workers.dev"
 
 # Optional: Test hashes (generated automatically on first run)
 # rendered_good="hash-will-be-generated"
-# upload_good="hash-will-be-generated" 
+# upload_good="hash-will-be-generated"
 # image_good="hash-will-be-generated"
 ```
 
@@ -114,7 +114,7 @@ Running tests against: https://your-domain.workers.dev
 TEST RESULTS:
 ==================================
 IMAGE: ✅ PASS
-RENDERED: ✅ PASS  
+RENDERED: ✅ PASS
 UPLOAD: ✅ PASS
 
 🎉 ALL TESTS PASSED!
@@ -128,22 +128,14 @@ If tests fail on first run, that's normal! The script will generate baseline has
 If you want to use your own domain instead of `*.workers.dev`:
 
 1. **Add domain to Cloudflare** (Websites → Add a Site)
-2. **Update `wrangler.toml`:**
-   ```toml
-   name = "getpost"
-   account_id = "your-account-id"
-   zone_id = "your-zone-id"  # From your domain's overview page
-   
-   [env.production]
-   route = "getpost.yourdomain.com/*"
-   ```
+2. **Update .mydomain" (Add API key, ACCOUNT_ID, Deploy URL, script name)
 3. **Deploy with route:** `./deploy.sh mydomain`
 
 ### Modify the Code
 GetPost is designed to be hackable! Try editing:
 
 - **`deps/getpost.css`** - Change colors, fonts, layout
-- **`deps/upload.html`** - Modify the upload page content  
+- **`deps/upload.html`** - Modify the upload page content
 - **`worker.js`** - Add features, change behavior
 - **`deps/getpost.html`** - Customize the content display template
 
