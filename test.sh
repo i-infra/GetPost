@@ -9,7 +9,7 @@ fi
 
 NO_ULID='s/01\([A-Z0-9]*\).*//'
 NO_EXPIRY='s/Expires.*//'
-NO_TWITTER='s/twitter\:.*//'
+NO_URL='s!http\(s\)\{0,1\}://[^[:space:]]*!!g'
 
 source ."$1"
 
@@ -30,7 +30,7 @@ echo "Running tests against: $DEPLOY_URL"
 # Test 1: Markdown rendering
 raw_response="$(echo -ne "# this is a test\n## of backend rendering\n\n" | curl -s --data-binary @/dev/stdin $DEPLOY_URL)"
 formatted_share_link="$(echo $raw_response | sed -e 's/ /\n/g' | grep key | head -n 1 | sed -e 's/\&raw//g')"
-rendered_sha256=$(curl -s $formatted_share_link | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_TWITTER | bare_sha256sum)
+rendered_sha256=$(curl -s $formatted_share_link | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_URL | bare_sha256sum)
 
 # Test 2: Upload page
 upload_sha256=$(curl -s $DEPLOY_URL/post | bare_sha256sum)
@@ -40,7 +40,7 @@ if [ ! -f "deps/notpacman.png" ]; then
     echo "WARNING: deps/notpacman.png not found, skipping image test"
     image_embed_sha256="SKIPPED"
 else
-    image_embed_sha256=$(curl -s --data-binary @deps/notpacman.png $DEPLOY_URL | grep share\ link | awk '{print $4}' | sed -e's/\&raw//g' | xargs curl -s | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_TWITTER | bare_sha256sum)
+    image_embed_sha256=$(curl -s --data-binary @deps/notpacman.png $DEPLOY_URL | grep share\ link | awk '{print $3}' | sed -e's/\&raw//g' | xargs curl -s | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_URL | bare_sha256sum)
 fi
 
 # Results

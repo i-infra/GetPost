@@ -23,7 +23,7 @@ echo "=================================================="
 
 # Test 1: Upload markdown and get rendered page hash
 echo "1. Testing markdown rendering..."
-formatted_share_link="$(echo -ne "# this is a test\n## of backend rendering\n\n" | curl -s --data-binary @/dev/stdin $DEPLOY_URL | grep share | awk '{print $3}' | sed -e 's/\&raw//g')"
+formatted_share_link="$(echo -ne "# this is a test\n## of backend rendering\n\n" | curl -s --data-binary @/dev/stdin $DEPLOY_URL | grep share | awk '{print $3}')"
 rendered_sha256=$(curl -s $formatted_share_link | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_URL | bare_sha256sum)
 
 echo "   Share link: $formatted_share_link"
@@ -43,7 +43,7 @@ if [ ! -f "deps/notpacman.png" ]; then
     echo -ne '\x89\x50\x4e\x47\x0d\x0a\x1a\x0a\x00\x00\x00\x0d\x49\x48\x44\x52\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\x0a\x49\x44\x41\x54\x78\x9c\x63\x00\x01\x00\x00\x05\x00\x01\x0d\x0a\x2d\xb4\x00\x00\x00\x00\x49\x45\x4e\x44\xae\x42\x60\x82' > deps/notpacman.png
 fi
 
-image_share_link="$(curl -s --data-binary @deps/notpacman.png $DEPLOY_URL | grep share\ link | awk '{print $3}' | sed -e's/\&raw//g')"
+image_share_link="$(curl -s --data-binary @deps/notpacman.png $DEPLOY_URL | grep share\ link | awk '{print $3}')"
 image_embed_sha256=$(curl -s $image_share_link | sed $NO_ULID | sed $NO_EXPIRY | sed $NO_URL | bare_sha256sum)
 
 echo "   Image share link: $image_share_link"
@@ -64,7 +64,7 @@ echo "VERIFICATION COMMANDS:"
 echo "=================================================="
 echo ""
 echo "# Verify rendered page:"
-echo "curl -s '$formatted_share_link' | sed '$NO_ULID' | sed '$NO_EXPIRY' | $NO_URL | sha256sum"
+echo "curl -s '$formatted_share_link' | sed '$NO_ULID' | sed '$NO_EXPIRY' | sed $NO_URL | sha256sum"
 echo ""
 echo "# Verify upload page:"
 echo "curl -s '$DEPLOY_URL/post' | sha256sum"
