@@ -217,7 +217,9 @@ async function HANDLER(fetch_event) {
   request = fetch_event.request;
   let headers = [...request.headers];
   for (const key in request.cf) {
-    headers = headers.concat([["cf-" + key, request.cf[key]]]);
+    headers = headers.concat([
+      ["cf-" + key, request.cf[key]]
+    ]);
   }
   // massage headers and cloudflare metadata into "requestHeadersAndFriends" - an object containing helpful metadata for a given request
   const requestHeadersAndFriends = {};
@@ -247,65 +249,91 @@ async function HANDLER(fetch_event) {
   // wrap main handler in a try/catch exception logging & reporting block, for easy debug
   try {
     url.protocol = "https:";
-    // if upload is directed at /post or root (new)
+
     if (url.pathname === "/post" || url.pathname === "/") {
       if (request.method === "POST") {
-        // generate store, edit, and delete keys - for future reference
+        // Accept any reasonable content for uploads
+        let blob = await request.arrayBuffer();
+        blob = await new Blob([blob]).arrayBuffer();
+
+        // Generate keys
         const storeKey = ulid(now);
         const editKey = ulid(now);
         const deleteKey = ulid(now);
-        let blob = await request.arrayBuffer();
-        blob = await new Blob([blob]).arrayBuffer();
-        // use specified ttl if x-ttl header present, else use 1 year
+
+        // Handle TTL
         let xTtlSeconds = requestHeadersAndFriends["x-ttl"];
         if (xTtlSeconds === undefined) {
-          // 1 year: 24 hours/day, 60*60 seconds/hour, 30 days/month, 12months/year
-          xTtlSeconds = 24 * 60 * 60 * 30 * 12;
+          xTtlSeconds = 24 * 60 * 60 * 30 * 12; // 1 year
         } else {
-          // parse base-10 number from header string
           xTtlSeconds = parseInt(xTtlSeconds, 10);
         }
+
         const expiryTime = new Date(xTtlSeconds * 1000 + now).toISOString();
+
+        // Store the content
         await NAMESPACE.put(storeKey, blob, {
           expirationTtl: xTtlSeconds,
-          metadata: { edit: editKey, del: deleteKey, expiry: expiryTime},
-        });
-        // date string for expiry in IS08601; have to multiply TTL (in seconds) by 1000 for JS-friendly time
-        const resp = `GetPost stored ${blob.byteLength} bytes!
-
-share link: ${url.href}?key=${storeKey}
-
-raw link: ${url.href}?key=${storeKey}&raw
-
-save link to delete: ${url.href}?key=${storeKey}&del=${deleteKey}
-
-expires at: ${expiryTime}`;
-        // file body is just bytes from the file, type and name are optionally passed as parameters
-        if (
-          requestHeadersAndFriends["content-type"] ===
-          "application/x-www-form-urlencoded"
-        ) {
-          if (
-            requestHeadersAndFriends["user-agent"].startsWith("curl/") ||
-            requestHeadersAndFriends["user-agent"]
-              .toLowerCase()
-              .includes("python")
-          ) {
-            return buildResponse(resp, DEFAULT_MIME_TEXT, {}, 200, url);
-          } else {
-            return buildResponse(marked(resp), DEFAULT_MIME_TEXT, {}, 200, url);
+          metadata: {
+            edit: editKey,
+            del: deleteKey,
+            expiry: expiryTime
           }
+        });
+
+        // Prepare response data
+        const responseData = {
+          message: `GetPost stored ${blob.byteLength} bytes!`,
+          size: blob.byteLength,
+          key: storeKey,
+          share_url: `${url.href}?key=${storeKey}`,
+          raw_url: `${url.href}?key=${storeKey}&raw`,
+          delete_url: `${url.href}?key=${storeKey}&del=${deleteKey}`,
+          expires_at: expiryTime
+        };
+
+        // Content negotiation based on Accept header with user-agent fallback
+        const acceptHeader = requestHeadersAndFriends["accept"] || "";
+        const userAgent = requestHeadersAndFriends["user-agent"] || "";
+
+        // Check for CLI tools as fallback when Accept header is generic
+        const isCLITool = userAgent.startsWith("curl/") ||
+          userAgent.toLowerCase().includes("wget") ||
+          userAgent.toLowerCase().includes("python") ||
+          userAgent.toLowerCase().includes("node") ||
+          userAgent.toLowerCase().includes("go-http-client");
+
+        if (acceptHeader.includes("application/json")) {
+          // JSON response for API clients
+          return buildResponse(JSON.stringify(responseData, null, 2), "application/json", {}, 200, url);
+        } else if (acceptHeader.includes("text/plain") && !acceptHeader.includes("text/html")) {
+          // Plain text response explicitly requested
+          const textResp = `${responseData.message}
+
+share link: ${responseData.share_url}
+raw link: ${responseData.raw_url}  
+delete link: ${responseData.delete_url}
+expires at: ${responseData.expires_at}`;
+          return buildResponse(textResp, DEFAULT_MIME_TEXT, {}, 200, url);
+        } else if (isCLITool && !acceptHeader.includes("text/html")) {
+          // Fallback: CLI tools get plain text when Accept header is generic (*/* or missing)
+          const textResp = `${responseData.message}
+
+share link: ${responseData.share_url}
+raw link: ${responseData.raw_url}
+delete link: ${responseData.delete_url}  
+expires at: ${responseData.expires_at}`;
+          return buildResponse(textResp, DEFAULT_MIME_TEXT, {}, 200, url);
+        } else {
+          // HTML response for browsers (with markdown parsing)
+          const htmlResp = marked(`${responseData.message}
+
+**Share link:** ${responseData.share_url}  
+**Raw link:** ${responseData.raw_url}  
+**Delete link:** ${responseData.delete_url}  
+**Expires at:** ${responseData.expires_at}`);
+          return buildResponse(htmlResp, DEFAULT_MIME_HTML, {}, 200, url);
         }
-        // normal multipart form uploads are actually surprisingly messy to parse, with their own syntax and semantics
-        // instead of using normal form submit (multipart) - upload.html actually intercepts the buttonpush and calls a special handler to upload
-        // NB: should never get here
-        return buildResponse(
-          "Sorry, MultiPart uploads are not supported.",
-          DEFAULT_MIME_HTML,
-          {},
-          503,
-          url,
-        );
       } else if (request.method === "GET") {
         const del = url.searchParams.get("del");
         const key = url.searchParams.get("key");
@@ -485,8 +513,11 @@ document.getElementById("upfile").addEventListener("change", function(event) {
         }
         // ULID is len26
         if (key.length === 26 || key.length === 91) {
-          let { contentFromKeyAsArrayBuffer, metadata } =
-            await NAMESPACE.getWithMetadata(key, "arrayBuffer");
+          let {
+            contentFromKeyAsArrayBuffer,
+            metadata
+          } =
+          await NAMESPACE.getWithMetadata(key, "arrayBuffer");
           // if either key dne, or old format
           if (metadata === null) {
             // check to see if old (pre-metadata)
@@ -502,8 +533,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
             } else {
               return buildResponse(
                 "Sorry, invalid key!",
-                DEFAULT_MIME_TEXT,
-                {},
+                DEFAULT_MIME_TEXT, {},
                 404,
                 url,
               );
@@ -521,16 +551,14 @@ document.getElementById("upfile").addEventListener("change", function(event) {
               const deleted_target_key = await NAMESPACE.delete(key);
               return buildResponse(
                 `OK, sent command to delete ${key} using ${del} - please wait 3min for full delete.`,
-                DEFAULT_MIME_TEXT,
-                {},
+                DEFAULT_MIME_TEXT, {},
                 200,
                 url,
               );
             } else {
               return buildResponse(
                 "Sorry, invalid del key!",
-                DEFAULT_MIME_TEXT,
-                {},
+                DEFAULT_MIME_TEXT, {},
                 404,
                 url,
               );
@@ -545,8 +573,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
             // if requested as raw, return the original resp object wtih detected MIME type
             return buildResponse(
               contentFromKeyAsArrayBuffer,
-              type,
-              {},
+              type, {},
               200,
               url,
             );
@@ -555,8 +582,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
           else {
             return buildResponse(
               generatedBodyHtml,
-              DEFAULT_MIME_HTML,
-              {},
+              DEFAULT_MIME_HTML, {},
               200,
               url,
             );
@@ -564,8 +590,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
         } else {
           return buildResponse(
             "Sorry, invalid key!",
-            DEFAULT_MIME_TEXT,
-            {},
+            DEFAULT_MIME_TEXT, {},
             404,
             url,
           );
@@ -585,8 +610,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
       }
       return buildResponse(
         JSON.stringify(requestHeadersAndFriends, null, 2) + "\n",
-        "application/json",
-        {},
+        "application/json", {},
         200,
         url,
       );
@@ -594,8 +618,7 @@ document.getElementById("upfile").addEventListener("change", function(event) {
       // helpful debug endpoint - return the request body
       return buildResponse(
         await request.arrayBuffer(),
-        "application/octet-stream",
-        {},
+        "application/octet-stream", {},
         200,
         url,
       );
@@ -609,16 +632,16 @@ document.getElementById("upfile").addEventListener("change", function(event) {
       // returning binary requires UTF-16 JS strings to be converted to ie) UTF-8 bytes
       return buildResponse(
         str2ab(atob(favicon_gzip)),
-        "image/x-icon",
-        { "Content-Encoding": "gzip" },
+        "image/x-icon", {
+          "Content-Encoding": "gzip"
+        },
         200,
         url,
       );
     } else {
       return buildResponse(
         `You probably want ${url.host}/post, not ${url.pathname}!`,
-        DEFAULT_MIME_HTML,
-        {},
+        DEFAULT_MIME_HTML, {},
         404,
         url,
       );
@@ -742,15 +765,14 @@ function hex(uint8arr_or_arraybuffer) {
 
 // content (and optional url) to wrapper html and detected type
 function generateHtmlBasedOnType(content, url = "", metadata = null) {
-   let expiryTime = "Unknown";
-   if (metadata) {
-      if (metadata.permanent) {
-        expiryTime = "Never (permanent)";
-      }
-       else if (metadata.expiry) {
-          expiryTime = metadata.expiry.split('T')[0];
-      }
-   }
+  let expiryTime = "Unknown";
+  if (metadata) {
+    if (metadata.permanent) {
+      expiryTime = "Never (permanent)";
+    } else if (metadata.expiry) {
+      expiryTime = metadata.expiry.split('T')[0];
+    }
+  }
   if (content === null || content === undefined) {
     return ["CONTENT NOT FOUND", DEFAULT_MIME_TEXT];
   }
@@ -897,7 +919,9 @@ function buildResponse(
   statuscode = 200,
   url = null
 ) {
-  const headersObj = Object.assign(headers, { "content-type": type });
+  const headersObj = Object.assign(headers, {
+    "content-type": type
+  });
 
   // Add CORS headers if cors parameter is present
   if (url) {
@@ -911,6 +935,8 @@ function buildResponse(
       headers: headersObj,
     });
   }
-  return new Response(blob, { status: statuscode, headers: headersObj });
+  return new Response(blob, {
+    status: statuscode,
+    headers: headersObj
+  });
 }
-
