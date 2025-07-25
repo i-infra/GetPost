@@ -311,7 +311,7 @@ async function HANDLER(fetch_event) {
           const textResp = `${responseData.message}
 
 share link: ${responseData.share_url}
-raw link: ${responseData.raw_url}  
+raw link: ${responseData.raw_url}
 delete link: ${responseData.delete_url}
 expires at: ${responseData.expires_at}`;
           return buildResponse(textResp, DEFAULT_MIME_TEXT, {}, 200, url);
@@ -321,16 +321,16 @@ expires at: ${responseData.expires_at}`;
 
 share link: ${responseData.share_url}
 raw link: ${responseData.raw_url}
-delete link: ${responseData.delete_url}  
+delete link: ${responseData.delete_url}
 expires at: ${responseData.expires_at}`;
           return buildResponse(textResp, DEFAULT_MIME_TEXT, {}, 200, url);
         } else {
           // HTML response for browsers (with markdown parsing)
           const htmlResp = marked(`${responseData.message}
 
-**Share link:** ${responseData.share_url}  
-**Raw link:** ${responseData.raw_url}  
-**Delete link:** ${responseData.delete_url}  
+**Share link:** ${responseData.share_url}
+**Raw link:** ${responseData.raw_url}
+**Delete link:** ${responseData.delete_url}
 **Expires at:** ${responseData.expires_at}`);
           return buildResponse(htmlResp, DEFAULT_MIME_HTML, {}, 200, url);
         }
@@ -338,6 +338,8 @@ expires at: ${responseData.expires_at}`;
         const del = url.searchParams.get("del");
         const key = url.searchParams.get("key");
         const raw = url.searchParams.has("raw");
+        const customContentType = url.searchParams.get("content_type");
+
         // if no key parameter provided, return the upload prompt so user can upload
         if (!url.searchParams.has("key")) {
           const upload = `<html><head>
@@ -570,10 +572,25 @@ document.getElementById("upfile").addEventListener("change", function(event) {
             metadata
           );
           if (raw) {
-            // if requested as raw, return the original resp object wtih detected MIME type
+            // Check if custom content type is provided and validate it
+            let responseContentType = type;
+            if (customContentType) {
+              if (isValidContentType(customContentType)) {
+                responseContentType = customContentType;
+              } else {
+                return buildResponse(
+                  "Sorry, invalid content_type parameter!",
+                  DEFAULT_MIME_TEXT, {},
+                  400,
+                  url,
+                );
+              }
+            }
+
+            // if requested as raw, return the original resp object with detected or custom MIME type
             return buildResponse(
               contentFromKeyAsArrayBuffer,
-              type, {},
+              responseContentType, {},
               200,
               url,
             );
@@ -665,6 +682,24 @@ document.getElementById("upfile").addEventListener("change", function(event) {
       headers: addCorsHeaders({}, url),
     });
   }
+}
+
+// Validate content type parameter
+function isValidContentType(contentType) {
+  // Basic validation for content type format
+  // Allow common patterns like "text/html", "application/json", etc.
+  const contentTypeRegex = /^[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_]*\/[a-zA-Z0-9][a-zA-Z0-9!#$&\-\^_.+]*(?:\s*;\s*[a-zA-Z0-9!#$&\-\^_]+=[a-zA-Z0-9!#$&\-\^_.+]*)*$/;
+
+  if (!contentTypeRegex.test(contentType)) {
+    return false;
+  }
+
+  // Additional length check for security
+  if (contentType.length > 200) {
+    return false;
+  }
+
+  return true;
 }
 
 // Handle CORS preflight requests
